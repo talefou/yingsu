@@ -1,0 +1,3830 @@
+
+  <!DOCTYPE html>
+  <html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>影视采集接口测速报告</title>
+    <style>
+      body {
+        font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f5f5f5;
+      }
+      .header {
+        text-align: center;
+        margin-bottom: 30px;
+        padding: 20px;
+        background: linear-gradient(135deg, #6e8efb, #a777e3);
+        color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      }
+      .api-card {
+        background-color: white;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      }
+      .api-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 10px;
+        margin-bottom: 15px;
+      }
+      .api-name {
+        font-size: 1.4em;
+        font-weight: bold;
+        color: #333;
+      }
+      .api-score {
+        font-size: 0.7em;
+        margin-left: 12px;
+        padding: 4px 8px;
+        border-radius: 4px;
+        vertical-align: middle;
+      }
+      .api-url {
+        color: #666;
+        font-size: 0.9em;
+        word-break: break-all;
+      }
+      .test-section {
+        margin-top: 20px;
+      }
+      .test-title {
+        font-size: 1.2em;
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: #444;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th, td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #eee;
+      }
+      th {
+        background-color: #f9f9f9;
+        font-weight: 600;
+      }
+      .success {
+        color: #28a745;
+      }
+      .error {
+        color: #dc3545;
+      }
+      .response-time {
+        font-weight: bold;
+      }
+      .summary {
+        margin-top: 30px;
+        background-color: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      }
+      .summary-title {
+        font-size: 1.3em;
+        font-weight: bold;
+        margin-bottom: 15px;
+        color: #333;
+      }
+      .summary-table {
+        width: 100%;
+      }
+      .footer {
+        margin-top: 40px;
+        text-align: center;
+        font-size: 0.9em;
+        color: #666;
+      }
+      .rank {
+        font-weight: bold;
+        font-size: 1.1em;
+      }
+      .rank-1 {
+        color: #FFD700;
+      }
+      .rank-2 {
+        color: #C0C0C0;
+      }
+      .rank-3 {
+        color: #CD7F32;
+      }
+      .result-count {
+        background-color: #f0f0f0;
+        border-radius: 12px;
+        padding: 2px 8px;
+        font-size: 0.85em;
+        color: #555;
+        margin-left: 5px;
+      }
+      .score {
+        font-weight: bold;
+        font-size: 1.1em;
+        text-align: center;
+      }
+      .score-excellent {
+        color: #1e9e54;
+        background-color: #e6f7ed;
+      }
+      .score-good {
+        color: #2b78d4;
+        background-color: #e6f1fa;
+      }
+      .score-average {
+        color: #f5a623;
+        background-color: #fef7e8;
+      }
+      .score-poor {
+        color: #d93026;
+        background-color: #fdedeb;
+      }
+      .score-details {
+        margin-top: 15px;
+        border-top: 1px dashed #eee;
+        padding-top: 15px;
+      }
+      .score-details-title {
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: #444;
+      }
+      .score-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+      }
+      .score-item {
+        background-color: #f9f9f9;
+        border-radius: 6px;
+        padding: 10px;
+      }
+      .score-item-title {
+        font-size: 0.9em;
+        color: #666;
+        margin-bottom: 5px;
+      }
+      .score-item-value {
+        font-weight: bold;
+        color: #333;
+      }
+      .weights-info {
+        margin-top: 20px;
+        font-size: 0.9em;
+        background-color: #f8f9fa;
+        padding: 10px;
+        border-radius: 6px;
+      }
+      .weights-title {
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+      .weights-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 10px;
+      }
+      .weight-item {
+        text-align: center;
+      }
+      .scoring-explanation {
+        margin-top: 40px;
+        padding: 20px;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      }
+      .scoring-explanation-title {
+        font-size: 1.3em;
+        font-weight: bold;
+        margin-bottom: 15px;
+        color: #333;
+      }
+      .scoring-table {
+        width: 100%;
+        margin-top: 15px;
+      }
+      .scoring-table th {
+        background-color: #f5f5f5;
+      }
+      .scoring-subtitle {
+        font-weight: bold;
+        margin-top: 15px;
+        margin-bottom: 10px;
+        color: #444;
+      }
+      .footnote {
+        font-style: italic;
+        color: #666;
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>影视采集接口测速报告</h1>
+      <p>生成时间: 10/8/2025, 4:48:31 AM</p>
+    </div>
+    
+    <div class="summary">
+      <div class="summary-title">测试摘要 (按综合速度排序)</div>
+      <table class="summary-table">
+        <tr>
+          <th>排名</th>
+          <th>接口名称</th>
+          <th>综合评分</th>
+          <th>搜索响应时间</th>
+          <th>详情响应时间</th>
+          <th>流媒体响应时间</th>
+          <th>下载速度</th>
+          <th>搜索成功率</th>
+          <th>详情成功率</th>
+          <th>流媒体成功率</th>
+          <th>搜索结果数</th>
+        </tr>
+  
+      <tr>
+        <td class="rank rank-1">1</td>
+        <td>卧龙资源</td>
+        <td class="score score-excellent">100/100</td>
+        <td>354ms</td>
+        <td>249ms</td>
+        <td>115ms</td>
+        <td>3.27MB/s</td>
+        <td>100%</td>
+        <td>100%</td>
+        <td>100%</td>
+        <td>40</td>
+      </tr>
+    
+      <tr>
+        <td class="rank rank-2">2</td>
+        <td>天涯资源</td>
+        <td class="score score-excellent">99/100</td>
+        <td>253ms</td>
+        <td>113ms</td>
+        <td>38ms</td>
+        <td>22.22MB/s</td>
+        <td>100%</td>
+        <td>100%</td>
+        <td>100%</td>
+        <td>22</td>
+      </tr>
+    
+      <tr>
+        <td class="rank rank-3">3</td>
+        <td>如意资源</td>
+        <td class="score score-excellent">95/100</td>
+        <td>777ms</td>
+        <td>777ms</td>
+        <td>362ms</td>
+        <td>2.69MB/s</td>
+        <td>100%</td>
+        <td>100%</td>
+        <td>100%</td>
+        <td>29</td>
+      </tr>
+    
+      <tr>
+        <td class="rank ">4</td>
+        <td>暴风资源</td>
+        <td class="score score-excellent">95/100</td>
+        <td>247ms</td>
+        <td>157ms</td>
+        <td>813ms</td>
+        <td>255.34KB/s</td>
+        <td>100%</td>
+        <td>100%</td>
+        <td>75%</td>
+        <td>38</td>
+      </tr>
+    
+      <tr>
+        <td class="rank ">5</td>
+        <td>魔都资源</td>
+        <td class="score score-excellent">95/100</td>
+        <td>1072ms</td>
+        <td>518ms</td>
+        <td>383ms</td>
+        <td>3.32MB/s</td>
+        <td>100%</td>
+        <td>100%</td>
+        <td>100%</td>
+        <td>24</td>
+      </tr>
+    
+      <tr>
+        <td class="rank ">6</td>
+        <td>360资源</td>
+        <td class="score score-excellent">94/100</td>
+        <td>1393ms</td>
+        <td>1135ms</td>
+        <td>155ms</td>
+        <td>8.01MB/s</td>
+        <td>100%</td>
+        <td>100%</td>
+        <td>100%</td>
+        <td>24</td>
+      </tr>
+    
+      <tr>
+        <td class="rank ">7</td>
+        <td>豆瓣资源</td>
+        <td class="score score-excellent">94/100</td>
+        <td>1217ms</td>
+        <td>467ms</td>
+        <td>376ms</td>
+        <td>517.38KB/s</td>
+        <td>100%</td>
+        <td>100%</td>
+        <td>75%</td>
+        <td>41</td>
+      </tr>
+    
+      <tr>
+        <td class="rank ">8</td>
+        <td>量子资源</td>
+        <td class="score score-good">89/100</td>
+        <td>600ms</td>
+        <td>162ms</td>
+        <td>676ms</td>
+        <td>2.32MB/s</td>
+        <td>100%</td>
+        <td>100%</td>
+        <td>33%</td>
+        <td>24</td>
+      </tr>
+    
+      <tr>
+        <td class="rank ">9</td>
+        <td>茅台资源</td>
+        <td class="score score-good">88/100</td>
+        <td>1474ms</td>
+        <td>654ms</td>
+        <td>2494ms</td>
+        <td>8.81MB/s</td>
+        <td>100%</td>
+        <td>100%</td>
+        <td>100%</td>
+        <td>41</td>
+      </tr>
+    
+      <tr>
+        <td class="rank ">10</td>
+        <td>极速资源</td>
+        <td class="score score-average">61/100</td>
+        <td>677ms</td>
+        <td>207ms</td>
+        <td>378ms</td>
+        <td>N/A</td>
+        <td>100%</td>
+        <td>100%</td>
+        <td>100%</td>
+        <td>24</td>
+      </tr>
+    
+      <tr>
+        <td class="rank ">11</td>
+        <td>电影天堂</td>
+        <td class="score score-poor">30/100</td>
+        <td>1542ms</td>
+        <td>398ms</td>
+        <td>N/A</td>
+        <td>N/A</td>
+        <td>100%</td>
+        <td>100%</td>
+        <td>0%</td>
+        <td>35</td>
+      </tr>
+    
+      <tr>
+        <td class="rank ">12</td>
+        <td>非凡影视</td>
+        <td class="score score-poor">30/100</td>
+        <td>1819ms</td>
+        <td>756ms</td>
+        <td>N/A</td>
+        <td>N/A</td>
+        <td>100%</td>
+        <td>100%</td>
+        <td>0%</td>
+        <td>36</td>
+      </tr>
+    
+      <tr>
+        <td class="rank ">13</td>
+        <td>最大资源</td>
+        <td class="score score-poor">30/100</td>
+        <td>733ms</td>
+        <td>156ms</td>
+        <td>N/A</td>
+        <td>N/A</td>
+        <td>100%</td>
+        <td>100%</td>
+        <td>0%</td>
+        <td>36</td>
+      </tr>
+    
+      <tr>
+        <td class="rank ">14</td>
+        <td>无尽资源</td>
+        <td class="score score-poor">30/100</td>
+        <td>697ms</td>
+        <td>211ms</td>
+        <td>N/A</td>
+        <td>N/A</td>
+        <td>100%</td>
+        <td>100%</td>
+        <td>0%</td>
+        <td>37</td>
+      </tr>
+    
+      <tr>
+        <td class="rank ">15</td>
+        <td>iKun资源</td>
+        <td class="score score-poor">30/100</td>
+        <td>1006ms</td>
+        <td>1232ms</td>
+        <td>N/A</td>
+        <td>N/A</td>
+        <td>100%</td>
+        <td>100%</td>
+        <td>0%</td>
+        <td>24</td>
+      </tr>
+    
+      <tr>
+        <td class="rank ">16</td>
+        <td>旺旺短剧</td>
+        <td class="score score-poor">16/100</td>
+        <td>237ms</td>
+        <td>N/A</td>
+        <td>N/A</td>
+        <td>N/A</td>
+        <td>100%</td>
+        <td>0%</td>
+        <td>0%</td>
+        <td>0</td>
+      </tr>
+    
+      <tr>
+        <td class="rank ">17</td>
+        <td>魔爪资源</td>
+        <td class="score score-poor">0/100</td>
+        <td>N/A</td>
+        <td>N/A</td>
+        <td>N/A</td>
+        <td>N/A</td>
+        <td>0%</td>
+        <td>0%</td>
+        <td>0%</td>
+        <td>0</td>
+      </tr>
+    
+      <tr>
+        <td class="rank ">18</td>
+        <td>樱花资源</td>
+        <td class="score score-poor">0/100</td>
+        <td>N/A</td>
+        <td>N/A</td>
+        <td>N/A</td>
+        <td>N/A</td>
+        <td>0%</td>
+        <td>0%</td>
+        <td>0%</td>
+        <td>0</td>
+      </tr>
+    
+      <tr>
+        <td class="rank ">19</td>
+        <td>百度资源</td>
+        <td class="score score-poor">0/100</td>
+        <td>N/A</td>
+        <td>N/A</td>
+        <td>N/A</td>
+        <td>N/A</td>
+        <td>0%</td>
+        <td>0%</td>
+        <td>0%</td>
+        <td>0</td>
+      </tr>
+    
+      </table>
+    </div>
+  
+    <div class="api-card">
+      <div class="api-header">
+        <div class="api-name">
+          <span class="rank rank-1">#1</span> 卧龙资源
+          <span class="api-score score-excellent">100/100分</span>
+        </div>
+        <div class="api-url">https://wolongzyw.com/api.php/provide/vod (JSON)</div>
+      </div>
+      
+      <div class="score-details">
+        <div class="score-details-title">评分详情</div>
+        <div class="score-grid">
+          <div class="score-item">
+            <div class="score-item-title">搜索响应时间</div>
+            <div class="score-item-value">100/100 (权重得分: 10)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">详情响应时间</div>
+            <div class="score-item-value">100/100 (权重得分: 5)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">流媒体响应时间</div>
+            <div class="score-item-value">100/100 (权重得分: 15)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">下载速度</div>
+            <div class="score-item-value">100/100 (权重得分: 35)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">搜索成功率</div>
+            <div class="score-item-value">100/100 (权重得分: 6)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">详情成功率</div>
+            <div class="score-item-value">100/100 (权重得分: 6)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">流媒体成功率</div>
+            <div class="score-item-value">100/100 (权重得分: 8)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">搜索结果数量</div>
+            <div class="score-item-value">100/100 (权重得分: 15)</div>
+          </div>
+        </div>
+        
+        <div class="weights-info">
+          <div class="weights-title">当前权重配置</div>
+          <div class="weights-grid">
+            <div class="weight-item">搜索响应时间: 10%</div>
+            <div class="weight-item">详情响应时间: 5%</div>
+            <div class="weight-item">流媒体性能: 50%</div>
+            <div class="weight-item">成功率: 20%</div>
+            <div class="weight-item">结果数量: 15%</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="test-section">
+        <div class="test-title">搜索测试</div>
+        <table>
+          <tr>
+            <th>关键词</th>
+            <th>状态</th>
+            <th>响应时间</th>
+            <th>结果数量</th>
+            <th>错误信息</th>
+          </tr>
+    
+        <tr>
+          <td>星际穿越</td>
+          <td class="success">成功</td>
+          <td class="response-time">306ms</td>
+          <td>3 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        <tr>
+          <td>赴山海</td>
+          <td class="success">成功</td>
+          <td class="response-time">303ms</td>
+          <td>1 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        <tr>
+          <td>名侦探柯南</td>
+          <td class="success">成功</td>
+          <td class="response-time">418ms</td>
+          <td>20 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        <tr>
+          <td>快乐大本营</td>
+          <td class="success">成功</td>
+          <td class="response-time">387ms</td>
+          <td>16 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        </table>
+      </div>
+    
+      <div class="test-section">
+        <div class="test-title">详情测试</div>
+        <table>
+          <tr>
+            <th>关键词</th>
+            <th>状态</th>
+            <th>响应时间</th>
+            <th>错误信息</th>
+          </tr>
+    
+          <tr>
+            <td>星际穿越</td>
+            <td class="success">成功</td>
+            <td class="response-time">244ms</td>
+            <td class="error"></td>
+          </tr>
+        
+          <tr>
+            <td>赴山海</td>
+            <td class="success">成功</td>
+            <td class="response-time">216ms</td>
+            <td class="error"></td>
+          </tr>
+        
+          <tr>
+            <td>名侦探柯南</td>
+            <td class="success">成功</td>
+            <td class="response-time">322ms</td>
+            <td class="error"></td>
+          </tr>
+        
+          <tr>
+            <td>快乐大本营</td>
+            <td class="success">成功</td>
+            <td class="response-time">213ms</td>
+            <td class="error"></td>
+          </tr>
+        
+        </table>
+      </div>
+      
+      <div class="test-section">
+        <div class="test-title">流媒体链接测试</div>
+        <table>
+          <tr>
+            <th>关键词</th>
+            <th>成功率</th>
+            <th>平均响应时间</th>
+            <th>平均下载速度</th>
+          </tr>
+    
+          <tr>
+            <td>星际穿越</td>
+            <td>1/1</td>
+            <td class="response-time">281ms</td>
+            <td>238.62KB/s</td>
+          </tr>
+        
+          <tr>
+            <td>赴山海</td>
+            <td>5/5</td>
+            <td class="response-time">73ms</td>
+            <td>2.54MB/s</td>
+          </tr>
+        
+          <tr>
+            <td>名侦探柯南</td>
+            <td>5/5</td>
+            <td class="response-time">47ms</td>
+            <td>3.31MB/s</td>
+          </tr>
+        
+          <tr>
+            <td>快乐大本营</td>
+            <td>5/5</td>
+            <td class="response-time">57ms</td>
+            <td>7.00MB/s</td>
+          </tr>
+        
+        </table>
+      </div>
+      
+    </div>
+    
+    <div class="api-card">
+      <div class="api-header">
+        <div class="api-name">
+          <span class="rank rank-2">#2</span> 天涯资源
+          <span class="api-score score-excellent">99/100分</span>
+        </div>
+        <div class="api-url">https://tyyszy.com/api.php/provide/vod (JSON)</div>
+      </div>
+      
+      <div class="score-details">
+        <div class="score-details-title">评分详情</div>
+        <div class="score-grid">
+          <div class="score-item">
+            <div class="score-item-title">搜索响应时间</div>
+            <div class="score-item-value">100/100 (权重得分: 10)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">详情响应时间</div>
+            <div class="score-item-value">100/100 (权重得分: 5)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">流媒体响应时间</div>
+            <div class="score-item-value">100/100 (权重得分: 15)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">下载速度</div>
+            <div class="score-item-value">100/100 (权重得分: 35)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">搜索成功率</div>
+            <div class="score-item-value">100/100 (权重得分: 6)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">详情成功率</div>
+            <div class="score-item-value">100/100 (权重得分: 6)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">流媒体成功率</div>
+            <div class="score-item-value">100/100 (权重得分: 8)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">搜索结果数量</div>
+            <div class="score-item-value">90/100 (权重得分: 14)</div>
+          </div>
+        </div>
+        
+        <div class="weights-info">
+          <div class="weights-title">当前权重配置</div>
+          <div class="weights-grid">
+            <div class="weight-item">搜索响应时间: 10%</div>
+            <div class="weight-item">详情响应时间: 5%</div>
+            <div class="weight-item">流媒体性能: 50%</div>
+            <div class="weight-item">成功率: 20%</div>
+            <div class="weight-item">结果数量: 15%</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="test-section">
+        <div class="test-title">搜索测试</div>
+        <table>
+          <tr>
+            <th>关键词</th>
+            <th>状态</th>
+            <th>响应时间</th>
+            <th>结果数量</th>
+            <th>错误信息</th>
+          </tr>
+    
+        <tr>
+          <td>星际穿越</td>
+          <td class="success">成功</td>
+          <td class="response-time">314ms</td>
+          <td>1 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        <tr>
+          <td>赴山海</td>
+          <td class="success">成功</td>
+          <td class="response-time">276ms</td>
+          <td>1 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        <tr>
+          <td>名侦探柯南</td>
+          <td class="success">成功</td>
+          <td class="response-time">196ms</td>
+          <td>20 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        <tr>
+          <td>快乐大本营</td>
+          <td class="success">成功</td>
+          <td class="response-time">224ms</td>
+          <td>0 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        </table>
+      </div>
+    
+      <div class="test-section">
+        <div class="test-title">详情测试</div>
+        <table>
+          <tr>
+            <th>关键词</th>
+            <th>状态</th>
+            <th>响应时间</th>
+            <th>错误信息</th>
+          </tr>
+    
+          <tr>
+            <td>星际穿越</td>
+            <td class="success">成功</td>
+            <td class="response-time">108ms</td>
+            <td class="error"></td>
+          </tr>
+        
+          <tr>
+            <td>赴山海</td>
+            <td class="success">成功</td>
+            <td class="response-time">123ms</td>
+            <td class="error"></td>
+          </tr>
+        
+          <tr>
+            <td>名侦探柯南</td>
+            <td class="success">成功</td>
+            <td class="response-time">108ms</td>
+            <td class="error"></td>
+          </tr>
+        
+        </table>
+      </div>
+      
+      <div class="test-section">
+        <div class="test-title">流媒体链接测试</div>
+        <table>
+          <tr>
+            <th>关键词</th>
+            <th>成功率</th>
+            <th>平均响应时间</th>
+            <th>平均下载速度</th>
+          </tr>
+    
+          <tr>
+            <td>星际穿越</td>
+            <td>1/1</td>
+            <td class="response-time">34ms</td>
+            <td>27.97MB/s</td>
+          </tr>
+        
+          <tr>
+            <td>赴山海</td>
+            <td>5/5</td>
+            <td class="response-time">64ms</td>
+            <td>18.10MB/s</td>
+          </tr>
+        
+          <tr>
+            <td>名侦探柯南</td>
+            <td>5/5</td>
+            <td class="response-time">17ms</td>
+            <td>20.59MB/s</td>
+          </tr>
+        
+        </table>
+      </div>
+      
+    </div>
+    
+    <div class="api-card">
+      <div class="api-header">
+        <div class="api-name">
+          <span class="rank rank-3">#3</span> 如意资源
+          <span class="api-score score-excellent">95/100分</span>
+        </div>
+        <div class="api-url">http://cj.rycjapi.com/api.php/provide/vod (JSON)</div>
+      </div>
+      
+      <div class="score-details">
+        <div class="score-details-title">评分详情</div>
+        <div class="score-grid">
+          <div class="score-item">
+            <div class="score-item-title">搜索响应时间</div>
+            <div class="score-item-value">90/100 (权重得分: 9)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">详情响应时间</div>
+            <div class="score-item-value">70/100 (权重得分: 4)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">流媒体响应时间</div>
+            <div class="score-item-value">90/100 (权重得分: 14)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">下载速度</div>
+            <div class="score-item-value">100/100 (权重得分: 35)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">搜索成功率</div>
+            <div class="score-item-value">100/100 (权重得分: 6)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">详情成功率</div>
+            <div class="score-item-value">100/100 (权重得分: 6)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">流媒体成功率</div>
+            <div class="score-item-value">100/100 (权重得分: 8)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">搜索结果数量</div>
+            <div class="score-item-value">90/100 (权重得分: 14)</div>
+          </div>
+        </div>
+        
+        <div class="weights-info">
+          <div class="weights-title">当前权重配置</div>
+          <div class="weights-grid">
+            <div class="weight-item">搜索响应时间: 10%</div>
+            <div class="weight-item">详情响应时间: 5%</div>
+            <div class="weight-item">流媒体性能: 50%</div>
+            <div class="weight-item">成功率: 20%</div>
+            <div class="weight-item">结果数量: 15%</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="test-section">
+        <div class="test-title">搜索测试</div>
+        <table>
+          <tr>
+            <th>关键词</th>
+            <th>状态</th>
+            <th>响应时间</th>
+            <th>结果数量</th>
+            <th>错误信息</th>
+          </tr>
+    
+        <tr>
+          <td>星际穿越</td>
+          <td class="success">成功</td>
+          <td class="response-time">1104ms</td>
+          <td>2 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        <tr>
+          <td>赴山海</td>
+          <td class="success">成功</td>
+          <td class="response-time">642ms</td>
+          <td>1 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        <tr>
+          <td>名侦探柯南</td>
+          <td class="success">成功</td>
+          <td class="response-time">691ms</td>
+          <td>20 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        <tr>
+          <td>快乐大本营</td>
+          <td class="success">成功</td>
+          <td class="response-time">669ms</td>
+          <td>6 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        </table>
+      </div>
+    
+      <div class="test-section">
+        <div class="test-title">详情测试</div>
+        <table>
+          <tr>
+            <th>关键词</th>
+            <th>状态</th>
+            <th>响应时间</th>
+            <th>错误信息</th>
+          </tr>
+    
+          <tr>
+            <td>星际穿越</td>
+            <td class="success">成功</td>
+            <td class="response-time">698ms</td>
+            <td class="error"></td>
+          </tr>
+        
+          <tr>
+            <td>赴山海</td>
+            <td class="success">成功</td>
+            <td class="response-time">673ms</td>
+            <td class="error"></td>
+          </tr>
+        
+          <tr>
+            <td>名侦探柯南</td>
+            <td class="success">成功</td>
+            <td class="response-time">1053ms</td>
+            <td class="error"></td>
+          </tr>
+        
+          <tr>
+            <td>快乐大本营</td>
+            <td class="success">成功</td>
+            <td class="response-time">685ms</td>
+            <td class="error"></td>
+          </tr>
+        
+        </table>
+      </div>
+      
+      <div class="test-section">
+        <div class="test-title">流媒体链接测试</div>
+        <table>
+          <tr>
+            <th>关键词</th>
+            <th>成功率</th>
+            <th>平均响应时间</th>
+            <th>平均下载速度</th>
+          </tr>
+    
+          <tr>
+            <td>星际穿越</td>
+            <td>1/1</td>
+            <td class="response-time">621ms</td>
+            <td>1.03MB/s</td>
+          </tr>
+        
+          <tr>
+            <td>赴山海</td>
+            <td>5/5</td>
+            <td class="response-time">280ms</td>
+            <td>4.91MB/s</td>
+          </tr>
+        
+          <tr>
+            <td>名侦探柯南</td>
+            <td>5/5</td>
+            <td class="response-time">280ms</td>
+            <td>2.52MB/s</td>
+          </tr>
+        
+          <tr>
+            <td>快乐大本营</td>
+            <td>5/5</td>
+            <td class="response-time">266ms</td>
+            <td>2.29MB/s</td>
+          </tr>
+        
+        </table>
+      </div>
+      
+    </div>
+    
+    <div class="api-card">
+      <div class="api-header">
+        <div class="api-name">
+          <span class="rank ">#4</span> 暴风资源
+          <span class="api-score score-excellent">95/100分</span>
+        </div>
+        <div class="api-url">https://bfzyapi.com/api.php/provide/vod (JSON)</div>
+      </div>
+      
+      <div class="score-details">
+        <div class="score-details-title">评分详情</div>
+        <div class="score-grid">
+          <div class="score-item">
+            <div class="score-item-title">搜索响应时间</div>
+            <div class="score-item-value">100/100 (权重得分: 10)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">详情响应时间</div>
+            <div class="score-item-value">100/100 (权重得分: 5)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">流媒体响应时间</div>
+            <div class="score-item-value">80/100 (权重得分: 12)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">下载速度</div>
+            <div class="score-item-value">100/100 (权重得分: 35)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">搜索成功率</div>
+            <div class="score-item-value">100/100 (权重得分: 6)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">详情成功率</div>
+            <div class="score-item-value">100/100 (权重得分: 6)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">流媒体成功率</div>
+            <div class="score-item-value">70/100 (权重得分: 6)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">搜索结果数量</div>
+            <div class="score-item-value">100/100 (权重得分: 15)</div>
+          </div>
+        </div>
+        
+        <div class="weights-info">
+          <div class="weights-title">当前权重配置</div>
+          <div class="weights-grid">
+            <div class="weight-item">搜索响应时间: 10%</div>
+            <div class="weight-item">详情响应时间: 5%</div>
+            <div class="weight-item">流媒体性能: 50%</div>
+            <div class="weight-item">成功率: 20%</div>
+            <div class="weight-item">结果数量: 15%</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="test-section">
+        <div class="test-title">搜索测试</div>
+        <table>
+          <tr>
+            <th>关键词</th>
+            <th>状态</th>
+            <th>响应时间</th>
+            <th>结果数量</th>
+            <th>错误信息</th>
+          </tr>
+    
+        <tr>
+          <td>星际穿越</td>
+          <td class="success">成功</td>
+          <td class="response-time">272ms</td>
+          <td>4 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        <tr>
+          <td>赴山海</td>
+          <td class="success">成功</td>
+          <td class="response-time">238ms</td>
+          <td>1 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        <tr>
+          <td>名侦探柯南</td>
+          <td class="success">成功</td>
+          <td class="response-time">231ms</td>
+          <td>20 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        <tr>
+          <td>快乐大本营</td>
+          <td class="success">成功</td>
+          <td class="response-time">247ms</td>
+          <td>13 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        </table>
+      </div>
+    
+      <div class="test-section">
+        <div class="test-title">详情测试</div>
+        <table>
+          <tr>
+            <th>关键词</th>
+            <th>状态</th>
+            <th>响应时间</th>
+            <th>错误信息</th>
+          </tr>
+    
+          <tr>
+            <td>星际穿越</td>
+            <td class="success">成功</td>
+            <td class="response-time">168ms</td>
+            <td class="error"></td>
+          </tr>
+        
+          <tr>
+            <td>赴山海</td>
+            <td class="success">成功</td>
+            <td class="response-time">127ms</td>
+            <td class="error"></td>
+          </tr>
+        
+          <tr>
+            <td>名侦探柯南</td>
+            <td class="success">成功</td>
+            <td class="response-time">144ms</td>
+            <td class="error"></td>
+          </tr>
+        
+          <tr>
+            <td>快乐大本营</td>
+            <td class="success">成功</td>
+            <td class="response-time">190ms</td>
+            <td class="error"></td>
+          </tr>
+        
+        </table>
+      </div>
+      
+      <div class="test-section">
+        <div class="test-title">流媒体链接测试</div>
+        <table>
+          <tr>
+            <th>关键词</th>
+            <th>成功率</th>
+            <th>平均响应时间</th>
+            <th>平均下载速度</th>
+          </tr>
+    
+          <tr>
+            <td>星际穿越</td>
+            <td>1/1</td>
+            <td class="response-time">963ms</td>
+            <td>269.97KB/s</td>
+          </tr>
+        
+          <tr>
+            <td>赴山海</td>
+            <td>5/5</td>
+            <td class="response-time">693ms</td>
+            <td>203.49KB/s</td>
+          </tr>
+        
+          <tr>
+            <td>名侦探柯南</td>
+            <td>1/1</td>
+            <td class="response-time">784ms</td>
+            <td>292.54KB/s</td>
+          </tr>
+        
+          <tr>
+            <td>快乐大本营</td>
+            <td>0/5</td>
+            <td class="response-time">N/A</td>
+            <td>N/A</td>
+          </tr>
+        
+        </table>
+      </div>
+      
+    </div>
+    
+    <div class="api-card">
+      <div class="api-header">
+        <div class="api-name">
+          <span class="rank ">#5</span> 魔都资源
+          <span class="api-score score-excellent">95/100分</span>
+        </div>
+        <div class="api-url">https://www.mdzyapi.com/api.php/provide/vod (JSON)</div>
+      </div>
+      
+      <div class="score-details">
+        <div class="score-details-title">评分详情</div>
+        <div class="score-grid">
+          <div class="score-item">
+            <div class="score-item-title">搜索响应时间</div>
+            <div class="score-item-value">80/100 (权重得分: 8)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">详情响应时间</div>
+            <div class="score-item-value">90/100 (权重得分: 5)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">流媒体响应时间</div>
+            <div class="score-item-value">90/100 (权重得分: 14)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">下载速度</div>
+            <div class="score-item-value">100/100 (权重得分: 35)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">搜索成功率</div>
+            <div class="score-item-value">100/100 (权重得分: 6)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">详情成功率</div>
+            <div class="score-item-value">100/100 (权重得分: 6)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">流媒体成功率</div>
+            <div class="score-item-value">100/100 (权重得分: 8)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">搜索结果数量</div>
+            <div class="score-item-value">90/100 (权重得分: 14)</div>
+          </div>
+        </div>
+        
+        <div class="weights-info">
+          <div class="weights-title">当前权重配置</div>
+          <div class="weights-grid">
+            <div class="weight-item">搜索响应时间: 10%</div>
+            <div class="weight-item">详情响应时间: 5%</div>
+            <div class="weight-item">流媒体性能: 50%</div>
+            <div class="weight-item">成功率: 20%</div>
+            <div class="weight-item">结果数量: 15%</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="test-section">
+        <div class="test-title">搜索测试</div>
+        <table>
+          <tr>
+            <th>关键词</th>
+            <th>状态</th>
+            <th>响应时间</th>
+            <th>结果数量</th>
+            <th>错误信息</th>
+          </tr>
+    
+        <tr>
+          <td>星际穿越</td>
+          <td class="success">成功</td>
+          <td class="response-time">1354ms</td>
+          <td>2 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        <tr>
+          <td>赴山海</td>
+          <td class="success">成功</td>
+          <td class="response-time">1281ms</td>
+          <td>1 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        <tr>
+          <td>名侦探柯南</td>
+          <td class="success">成功</td>
+          <td class="response-time">808ms</td>
+          <td>20 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        <tr>
+          <td>快乐大本营</td>
+          <td class="success">成功</td>
+          <td class="response-time">843ms</td>
+          <td>1 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        </table>
+      </div>
+    
+      <div class="test-section">
+        <div class="test-title">详情测试</div>
+        <table>
+          <tr>
+            <th>关键词</th>
+            <th>状态</th>
+            <th>响应时间</th>
+            <th>错误信息</th>
+          </tr>
+    
+          <tr>
+            <td>星际穿越</td>
+            <td class="success">成功</td>
+            <td class="response-time">730ms</td>
+            <td class="error"></td>
+          </tr>
+        
+          <tr>
+            <td>赴山海</td>
+            <td class="success">成功</td>
+            <td class="response-time">508ms</td>
+            <td class="error"></td>
+          </tr>
+        
+          <tr>
+            <td>名侦探柯南</td>
+            <td class="success">成功</td>
+            <td class="response-time">681ms</td>
+            <td class="error"></td>
+          </tr>
+        
+          <tr>
+            <td>快乐大本营</td>
+            <td class="success">成功</td>
+            <td class="response-time">153ms</td>
+            <td class="error"></td>
+          </tr>
+        
+        </table>
+      </div>
+      
+      <div class="test-section">
+        <div class="test-title">流媒体链接测试</div>
+        <table>
+          <tr>
+            <th>关键词</th>
+            <th>成功率</th>
+            <th>平均响应时间</th>
+            <th>平均下载速度</th>
+          </tr>
+    
+          <tr>
+            <td>星际穿越</td>
+            <td>1/1</td>
+            <td class="response-time">535ms</td>
+            <td>2.44MB/s</td>
+          </tr>
+        
+          <tr>
+            <td>赴山海</td>
+            <td>5/5</td>
+            <td class="response-time">210ms</td>
+            <td>7.20MB/s</td>
+          </tr>
+        
+          <tr>
+            <td>名侦探柯南</td>
+            <td>5/5</td>
+            <td class="response-time">137ms</td>
+            <td>3.43MB/s</td>
+          </tr>
+        
+          <tr>
+            <td>快乐大本营</td>
+            <td>1/1</td>
+            <td class="response-time">651ms</td>
+            <td>198.69KB/s</td>
+          </tr>
+        
+        </table>
+      </div>
+      
+    </div>
+    
+    <div class="api-card">
+      <div class="api-header">
+        <div class="api-name">
+          <span class="rank ">#6</span> 360资源
+          <span class="api-score score-excellent">94/100分</span>
+        </div>
+        <div class="api-url">https://360zy.com/api.php/provide/vod (JSON)</div>
+      </div>
+      
+      <div class="score-details">
+        <div class="score-details-title">评分详情</div>
+        <div class="score-grid">
+          <div class="score-item">
+            <div class="score-item-title">搜索响应时间</div>
+            <div class="score-item-value">80/100 (权重得分: 8)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">详情响应时间</div>
+            <div class="score-item-value">50/100 (权重得分: 3)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">流媒体响应时间</div>
+            <div class="score-item-value">100/100 (权重得分: 15)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">下载速度</div>
+            <div class="score-item-value">100/100 (权重得分: 35)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">搜索成功率</div>
+            <div class="score-item-value">100/100 (权重得分: 6)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">详情成功率</div>
+            <div class="score-item-value">100/100 (权重得分: 6)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">流媒体成功率</div>
+            <div class="score-item-value">100/100 (权重得分: 8)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">搜索结果数量</div>
+            <div class="score-item-value">90/100 (权重得分: 14)</div>
+          </div>
+        </div>
+        
+        <div class="weights-info">
+          <div class="weights-title">当前权重配置</div>
+          <div class="weights-grid">
+            <div class="weight-item">搜索响应时间: 10%</div>
+            <div class="weight-item">详情响应时间: 5%</div>
+            <div class="weight-item">流媒体性能: 50%</div>
+            <div class="weight-item">成功率: 20%</div>
+            <div class="weight-item">结果数量: 15%</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="test-section">
+        <div class="test-title">搜索测试</div>
+        <table>
+          <tr>
+            <th>关键词</th>
+            <th>状态</th>
+            <th>响应时间</th>
+            <th>结果数量</th>
+            <th>错误信息</th>
+          </tr>
+    
+        <tr>
+          <td>星际穿越</td>
+          <td class="success">成功</td>
+          <td class="response-time">1255ms</td>
+          <td>2 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        <tr>
+          <td>赴山海</td>
+          <td class="success">成功</td>
+          <td class="response-time">1435ms</td>
+          <td>1 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        <tr>
+          <td>名侦探柯南</td>
+          <td class="success">成功</td>
+          <td class="response-time">1887ms</td>
+          <td>20 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        <tr>
+          <td>快乐大本营</td>
+          <td class="success">成功</td>
+          <td class="response-time">994ms</td>
+          <td>1 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        </table>
+      </div>
+    
+      <div class="test-section">
+        <div class="test-title">详情测试</div>
+        <table>
+          <tr>
+            <th>关键词</th>
+            <th>状态</th>
+            <th>响应时间</th>
+            <th>错误信息</th>
+          </tr>
+    
+          <tr>
+            <td>星际穿越</td>
+            <td class="success">成功</td>
+            <td class="response-time">1005ms</td>
+            <td class="error"></td>
+          </tr>
+        
+          <tr>
+            <td>赴山海</td>
+            <td class="success">成功</td>
+            <td class="response-time">1185ms</td>
+            <td class="error"></td>
+          </tr>
+        
+          <tr>
+            <td>名侦探柯南</td>
+            <td class="success">成功</td>
+            <td class="response-time">1712ms</td>
+            <td class="error"></td>
+          </tr>
+        
+          <tr>
+            <td>快乐大本营</td>
+            <td class="success">成功</td>
+            <td class="response-time">636ms</td>
+            <td class="error"></td>
+          </tr>
+        
+        </table>
+      </div>
+      
+      <div class="test-section">
+        <div class="test-title">流媒体链接测试</div>
+        <table>
+          <tr>
+            <th>关键词</th>
+            <th>成功率</th>
+            <th>平均响应时间</th>
+            <th>平均下载速度</th>
+          </tr>
+    
+          <tr>
+            <td>星际穿越</td>
+            <td>1/1</td>
+            <td class="response-time">276ms</td>
+            <td>2.93MB/s</td>
+          </tr>
+        
+          <tr>
+            <td>赴山海</td>
+            <td>5/5</td>
+            <td class="response-time">148ms</td>
+            <td>16.83MB/s</td>
+          </tr>
+        
+          <tr>
+            <td>名侦探柯南</td>
+            <td>5/5</td>
+            <td class="response-time">92ms</td>
+            <td>11.30MB/s</td>
+          </tr>
+        
+          <tr>
+            <td>快乐大本营</td>
+            <td>1/1</td>
+            <td class="response-time">104ms</td>
+            <td>1020.49KB/s</td>
+          </tr>
+        
+        </table>
+      </div>
+      
+    </div>
+    
+    <div class="api-card">
+      <div class="api-header">
+        <div class="api-name">
+          <span class="rank ">#7</span> 豆瓣资源
+          <span class="api-score score-excellent">94/100分</span>
+        </div>
+        <div class="api-url">https://dbzy.tv/api.php/provide/vod (JSON)</div>
+      </div>
+      
+      <div class="score-details">
+        <div class="score-details-title">评分详情</div>
+        <div class="score-grid">
+          <div class="score-item">
+            <div class="score-item-title">搜索响应时间</div>
+            <div class="score-item-value">80/100 (权重得分: 8)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">详情响应时间</div>
+            <div class="score-item-value">90/100 (权重得分: 5)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">流媒体响应时间</div>
+            <div class="score-item-value">90/100 (权重得分: 14)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">下载速度</div>
+            <div class="score-item-value">100/100 (权重得分: 35)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">搜索成功率</div>
+            <div class="score-item-value">100/100 (权重得分: 6)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">详情成功率</div>
+            <div class="score-item-value">100/100 (权重得分: 6)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">流媒体成功率</div>
+            <div class="score-item-value">70/100 (权重得分: 6)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">搜索结果数量</div>
+            <div class="score-item-value">100/100 (权重得分: 15)</div>
+          </div>
+        </div>
+        
+        <div class="weights-info">
+          <div class="weights-title">当前权重配置</div>
+          <div class="weights-grid">
+            <div class="weight-item">搜索响应时间: 10%</div>
+            <div class="weight-item">详情响应时间: 5%</div>
+            <div class="weight-item">流媒体性能: 50%</div>
+            <div class="weight-item">成功率: 20%</div>
+            <div class="weight-item">结果数量: 15%</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="test-section">
+        <div class="test-title">搜索测试</div>
+        <table>
+          <tr>
+            <th>关键词</th>
+            <th>状态</th>
+            <th>响应时间</th>
+            <th>结果数量</th>
+            <th>错误信息</th>
+          </tr>
+    
+        <tr>
+          <td>星际穿越</td>
+          <td class="success">成功</td>
+          <td class="response-time">1363ms</td>
+          <td>3 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        <tr>
+          <td>赴山海</td>
+          <td class="success">成功</td>
+          <td class="response-time">1237ms</td>
+          <td>1 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        <tr>
+          <td>名侦探柯南</td>
+          <td class="success">成功</td>
+          <td class="response-time">840ms</td>
+          <td>20 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        <tr>
+          <td>快乐大本营</td>
+          <td class="success">成功</td>
+          <td class="response-time">1428ms</td>
+          <td>17 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        </table>
+      </div>
+    
+      <div class="test-section">
+        <div class="test-title">详情测试</div>
+        <table>
+          <tr>
+            <th>关键词</th>
+            <th>状态</th>
+            <th>响应时间</th>
+            <th>错误信息</th>
+          </tr>
+    
+          <tr>
+            <td>星际穿越</td>
+            <td class="success">成功</td>
+            <td class="response-time">505ms</td>
+            <td class="error"></td>
+          </tr>
+        
+          <tr>
+            <td>赴山海</td>
+            <td class="success">成功</td>
+            <td class="response-time">479ms</td>
+            <td class="error"></td>
+          </tr>
+        
+          <tr>
+            <td>名侦探柯南</td>
+            <td class="success">成功</td>
+            <td class="response-time">382ms</td>
+            <td class="error"></td>
+          </tr>
+        
+          <tr>
+            <td>快乐大本营</td>
+            <td class="success">成功</td>
+            <td class="response-time">501ms</td>
+            <td class="error"></td>
+          </tr>
+        
+        </table>
+      </div>
+      
+      <div class="test-section">
+        <div class="test-title">流媒体链接测试</div>
+        <table>
+          <tr>
+            <th>关键词</th>
+            <th>成功率</th>
+            <th>平均响应时间</th>
+            <th>平均下载速度</th>
+          </tr>
+    
+          <tr>
+            <td>星际穿越</td>
+            <td>0/1</td>
+            <td class="response-time">N/A</td>
+            <td>N/A</td>
+          </tr>
+        
+          <tr>
+            <td>赴山海</td>
+            <td>5/5</td>
+            <td class="response-time">335ms</td>
+            <td>590.13KB/s</td>
+          </tr>
+        
+          <tr>
+            <td>名侦探柯南</td>
+            <td>2/5</td>
+            <td class="response-time">410ms</td>
+            <td>533.42KB/s</td>
+          </tr>
+        
+          <tr>
+            <td>快乐大本营</td>
+            <td>5/5</td>
+            <td class="response-time">383ms</td>
+            <td>428.58KB/s</td>
+          </tr>
+        
+        </table>
+      </div>
+      
+    </div>
+    
+    <div class="api-card">
+      <div class="api-header">
+        <div class="api-name">
+          <span class="rank ">#8</span> 量子资源
+          <span class="api-score score-good">89/100分</span>
+        </div>
+        <div class="api-url">https://cj.lziapi.com/api.php/provide/vod (JSON)</div>
+      </div>
+      
+      <div class="score-details">
+        <div class="score-details-title">评分详情</div>
+        <div class="score-grid">
+          <div class="score-item">
+            <div class="score-item-title">搜索响应时间</div>
+            <div class="score-item-value">90/100 (权重得分: 9)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">详情响应时间</div>
+            <div class="score-item-value">100/100 (权重得分: 5)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">流媒体响应时间</div>
+            <div class="score-item-value">80/100 (权重得分: 12)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">下载速度</div>
+            <div class="score-item-value">100/100 (权重得分: 35)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">搜索成功率</div>
+            <div class="score-item-value">100/100 (权重得分: 6)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">详情成功率</div>
+            <div class="score-item-value">100/100 (权重得分: 6)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">流媒体成功率</div>
+            <div class="score-item-value">30/100 (权重得分: 2)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">搜索结果数量</div>
+            <div class="score-item-value">90/100 (权重得分: 14)</div>
+          </div>
+        </div>
+        
+        <div class="weights-info">
+          <div class="weights-title">当前权重配置</div>
+          <div class="weights-grid">
+            <div class="weight-item">搜索响应时间: 10%</div>
+            <div class="weight-item">详情响应时间: 5%</div>
+            <div class="weight-item">流媒体性能: 50%</div>
+            <div class="weight-item">成功率: 20%</div>
+            <div class="weight-item">结果数量: 15%</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="test-section">
+        <div class="test-title">搜索测试</div>
+        <table>
+          <tr>
+            <th>关键词</th>
+            <th>状态</th>
+            <th>响应时间</th>
+            <th>结果数量</th>
+            <th>错误信息</th>
+          </tr>
+    
+        <tr>
+          <td>星际穿越</td>
+          <td class="success">成功</td>
+          <td class="response-time">704ms</td>
+          <td>3 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        <tr>
+          <td>赴山海</td>
+          <td class="success">成功</td>
+          <td class="response-time">613ms</td>
+          <td>1 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        <tr>
+          <td>名侦探柯南</td>
+          <td class="success">成功</td>
+          <td class="response-time">443ms</td>
+          <td>20 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        <tr>
+          <td>快乐大本营</td>
+          <td class="success">成功</td>
+          <td class="response-time">638ms</td>
+          <td>0 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        </table>
+      </div>
+    
+      <div class="test-section">
+        <div class="test-title">详情测试</div>
+        <table>
+          <tr>
+            <th>关键词</th>
+            <th>状态</th>
+            <th>响应时间</th>
+            <th>错误信息</th>
+          </tr>
+    
+          <tr>
+            <td>星际穿越</td>
+            <td class="success">成功</td>
+            <td class="response-time">147ms</td>
+            <td class="error"></td>
+          </tr>
+        
+          <tr>
+            <td>赴山海</td>
+            <td class="success">成功</td>
+            <td class="response-time">194ms</td>
+            <td class="error"></td>
+          </tr>
+        
+          <tr>
+            <td>名侦探柯南</td>
+            <td class="success">成功</td>
+            <td class="response-time">146ms</td>
+            <td class="error"></td>
+          </tr>
+        
+        </table>
+      </div>
+      
+      <div class="test-section">
+        <div class="test-title">流媒体链接测试</div>
+        <table>
+          <tr>
+            <th>关键词</th>
+            <th>成功率</th>
+            <th>平均响应时间</th>
+            <th>平均下载速度</th>
+          </tr>
+    
+          <tr>
+            <td>星际穿越</td>
+            <td>0/1</td>
+            <td class="response-time">N/A</td>
+            <td>N/A</td>
+          </tr>
+        
+          <tr>
+            <td>赴山海</td>
+            <td>0/5</td>
+            <td class="response-time">N/A</td>
+            <td>N/A</td>
+          </tr>
+        
+          <tr>
+            <td>名侦探柯南</td>
+            <td>2/5</td>
+            <td class="response-time">676ms</td>
+            <td>2.32MB/s</td>
+          </tr>
+        
+        </table>
+      </div>
+      
+    </div>
+    
+    <div class="api-card">
+      <div class="api-header">
+        <div class="api-name">
+          <span class="rank ">#9</span> 茅台资源
+          <span class="api-score score-good">88/100分</span>
+        </div>
+        <div class="api-url">https://caiji.maotaizy.cc/api.php/provide/vod (JSON)</div>
+      </div>
+      
+      <div class="score-details">
+        <div class="score-details-title">评分详情</div>
+        <div class="score-grid">
+          <div class="score-item">
+            <div class="score-item-title">搜索响应时间</div>
+            <div class="score-item-value">80/100 (权重得分: 8)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">详情响应时间</div>
+            <div class="score-item-value">70/100 (权重得分: 4)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">流媒体响应时间</div>
+            <div class="score-item-value">40/100 (权重得分: 6)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">下载速度</div>
+            <div class="score-item-value">100/100 (权重得分: 35)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">搜索成功率</div>
+            <div class="score-item-value">100/100 (权重得分: 6)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">详情成功率</div>
+            <div class="score-item-value">100/100 (权重得分: 6)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">流媒体成功率</div>
+            <div class="score-item-value">100/100 (权重得分: 8)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">搜索结果数量</div>
+            <div class="score-item-value">100/100 (权重得分: 15)</div>
+          </div>
+        </div>
+        
+        <div class="weights-info">
+          <div class="weights-title">当前权重配置</div>
+          <div class="weights-grid">
+            <div class="weight-item">搜索响应时间: 10%</div>
+            <div class="weight-item">详情响应时间: 5%</div>
+            <div class="weight-item">流媒体性能: 50%</div>
+            <div class="weight-item">成功率: 20%</div>
+            <div class="weight-item">结果数量: 15%</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="test-section">
+        <div class="test-title">搜索测试</div>
+        <table>
+          <tr>
+            <th>关键词</th>
+            <th>状态</th>
+            <th>响应时间</th>
+            <th>结果数量</th>
+            <th>错误信息</th>
+          </tr>
+    
+        <tr>
+          <td>星际穿越</td>
+          <td class="success">成功</td>
+          <td class="response-time">1657ms</td>
+          <td>3 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        <tr>
+          <td>赴山海</td>
+          <td class="success">成功</td>
+          <td class="response-time">1514ms</td>
+          <td>1 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        <tr>
+          <td>名侦探柯南</td>
+          <td class="success">成功</td>
+          <td class="response-time">1274ms</td>
+          <td>20 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        <tr>
+          <td>快乐大本营</td>
+          <td class="success">成功</td>
+          <td class="response-time">1449ms</td>
+          <td>17 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        </table>
+      </div>
+    
+      <div class="test-section">
+        <div class="test-title">详情测试</div>
+        <table>
+          <tr>
+            <th>关键词</th>
+            <th>状态</th>
+            <th>响应时间</th>
+            <th>错误信息</th>
+          </tr>
+    
+          <tr>
+            <td>星际穿越</td>
+            <td class="success">成功</td>
+            <td class="response-time">562ms</td>
+            <td class="error"></td>
+          </tr>
+        
+          <tr>
+            <td>赴山海</td>
+            <td class="success">成功</td>
+            <td class="response-time">831ms</td>
+            <td class="error"></td>
+          </tr>
+        
+          <tr>
+            <td>名侦探柯南</td>
+            <td class="success">成功</td>
+            <td class="response-time">652ms</td>
+            <td class="error"></td>
+          </tr>
+        
+          <tr>
+            <td>快乐大本营</td>
+            <td class="success">成功</td>
+            <td class="response-time">569ms</td>
+            <td class="error"></td>
+          </tr>
+        
+        </table>
+      </div>
+      
+      <div class="test-section">
+        <div class="test-title">流媒体链接测试</div>
+        <table>
+          <tr>
+            <th>关键词</th>
+            <th>成功率</th>
+            <th>平均响应时间</th>
+            <th>平均下载速度</th>
+          </tr>
+    
+          <tr>
+            <td>星际穿越</td>
+            <td>1/1</td>
+            <td class="response-time">7772ms</td>
+            <td>301.94KB/s</td>
+          </tr>
+        
+          <tr>
+            <td>赴山海</td>
+            <td>5/5</td>
+            <td class="response-time">948ms</td>
+            <td>16.96MB/s</td>
+          </tr>
+        
+          <tr>
+            <td>名侦探柯南</td>
+            <td>5/5</td>
+            <td class="response-time">762ms</td>
+            <td>2.33MB/s</td>
+          </tr>
+        
+          <tr>
+            <td>快乐大本营</td>
+            <td>5/5</td>
+            <td class="response-time">492ms</td>
+            <td>15.67MB/s</td>
+          </tr>
+        
+        </table>
+      </div>
+      
+    </div>
+    
+    <div class="api-card">
+      <div class="api-header">
+        <div class="api-name">
+          <span class="rank ">#10</span> 极速资源
+          <span class="api-score score-average">61/100分</span>
+        </div>
+        <div class="api-url">https://jszyapi.com/api.php/provide/vod (JSON)</div>
+      </div>
+      
+      <div class="score-details">
+        <div class="score-details-title">评分详情</div>
+        <div class="score-grid">
+          <div class="score-item">
+            <div class="score-item-title">搜索响应时间</div>
+            <div class="score-item-value">90/100 (权重得分: 9)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">详情响应时间</div>
+            <div class="score-item-value">100/100 (权重得分: 5)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">流媒体响应时间</div>
+            <div class="score-item-value">90/100 (权重得分: 14)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">下载速度</div>
+            <div class="score-item-value">0/100 (权重得分: 0)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">搜索成功率</div>
+            <div class="score-item-value">100/100 (权重得分: 6)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">详情成功率</div>
+            <div class="score-item-value">100/100 (权重得分: 6)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">流媒体成功率</div>
+            <div class="score-item-value">100/100 (权重得分: 8)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">搜索结果数量</div>
+            <div class="score-item-value">90/100 (权重得分: 14)</div>
+          </div>
+        </div>
+        
+        <div class="weights-info">
+          <div class="weights-title">当前权重配置</div>
+          <div class="weights-grid">
+            <div class="weight-item">搜索响应时间: 10%</div>
+            <div class="weight-item">详情响应时间: 5%</div>
+            <div class="weight-item">流媒体性能: 50%</div>
+            <div class="weight-item">成功率: 20%</div>
+            <div class="weight-item">结果数量: 15%</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="test-section">
+        <div class="test-title">搜索测试</div>
+        <table>
+          <tr>
+            <th>关键词</th>
+            <th>状态</th>
+            <th>响应时间</th>
+            <th>结果数量</th>
+            <th>错误信息</th>
+          </tr>
+    
+        <tr>
+          <td>星际穿越</td>
+          <td class="success">成功</td>
+          <td class="response-time">1205ms</td>
+          <td>3 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        <tr>
+          <td>赴山海</td>
+          <td class="success">成功</td>
+          <td class="response-time">146ms</td>
+          <td>1 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        <tr>
+          <td>名侦探柯南</td>
+          <td class="success">成功</td>
+          <td class="response-time">191ms</td>
+          <td>20 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        <tr>
+          <td>快乐大本营</td>
+          <td class="success">成功</td>
+          <td class="response-time">1164ms</td>
+          <td>0 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        </table>
+      </div>
+    
+      <div class="test-section">
+        <div class="test-title">详情测试</div>
+        <table>
+          <tr>
+            <th>关键词</th>
+            <th>状态</th>
+            <th>响应时间</th>
+            <th>错误信息</th>
+          </tr>
+    
+          <tr>
+            <td>星际穿越</td>
+            <td class="success">成功</td>
+            <td class="response-time">213ms</td>
+            <td class="error"></td>
+          </tr>
+        
+          <tr>
+            <td>赴山海</td>
+            <td class="success">成功</td>
+            <td class="response-time">178ms</td>
+            <td class="error"></td>
+          </tr>
+        
+          <tr>
+            <td>名侦探柯南</td>
+            <td class="success">成功</td>
+            <td class="response-time">231ms</td>
+            <td class="error"></td>
+          </tr>
+        
+        </table>
+      </div>
+      
+      <div class="test-section">
+        <div class="test-title">流媒体链接测试</div>
+        <table>
+          <tr>
+            <th>关键词</th>
+            <th>成功率</th>
+            <th>平均响应时间</th>
+            <th>平均下载速度</th>
+          </tr>
+    
+          <tr>
+            <td>星际穿越</td>
+            <td>1/1</td>
+            <td class="response-time">661ms</td>
+            <td>N/A</td>
+          </tr>
+        
+          <tr>
+            <td>赴山海</td>
+            <td>5/5</td>
+            <td class="response-time">313ms</td>
+            <td>N/A</td>
+          </tr>
+        
+          <tr>
+            <td>名侦探柯南</td>
+            <td>5/5</td>
+            <td class="response-time">160ms</td>
+            <td>N/A</td>
+          </tr>
+        
+        </table>
+      </div>
+      
+    </div>
+    
+    <div class="api-card">
+      <div class="api-header">
+        <div class="api-name">
+          <span class="rank ">#11</span> 电影天堂
+          <span class="api-score score-poor">30/100分</span>
+        </div>
+        <div class="api-url">http://caiji.dyttzyapi.com/api.php/provide/vod (JSON)</div>
+      </div>
+      
+      <div class="score-details">
+        <div class="score-details-title">评分详情</div>
+        <div class="score-grid">
+          <div class="score-item">
+            <div class="score-item-title">搜索响应时间</div>
+            <div class="score-item-value">70/100 (权重得分: 7)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">详情响应时间</div>
+            <div class="score-item-value">90/100 (权重得分: 5)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">流媒体响应时间</div>
+            <div class="score-item-value">0/100 (权重得分: 0)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">下载速度</div>
+            <div class="score-item-value">0/100 (权重得分: 0)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">搜索成功率</div>
+            <div class="score-item-value">100/100 (权重得分: 6)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">详情成功率</div>
+            <div class="score-item-value">100/100 (权重得分: 6)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">流媒体成功率</div>
+            <div class="score-item-value">0/100 (权重得分: 0)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">搜索结果数量</div>
+            <div class="score-item-value">100/100 (权重得分: 15)</div>
+          </div>
+        </div>
+        
+        <div class="weights-info">
+          <div class="weights-title">当前权重配置</div>
+          <div class="weights-grid">
+            <div class="weight-item">搜索响应时间: 10%</div>
+            <div class="weight-item">详情响应时间: 5%</div>
+            <div class="weight-item">流媒体性能: 50%</div>
+            <div class="weight-item">成功率: 20%</div>
+            <div class="weight-item">结果数量: 15%</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="test-section">
+        <div class="test-title">搜索测试</div>
+        <table>
+          <tr>
+            <th>关键词</th>
+            <th>状态</th>
+            <th>响应时间</th>
+            <th>结果数量</th>
+            <th>错误信息</th>
+          </tr>
+    
+        <tr>
+          <td>星际穿越</td>
+          <td class="success">成功</td>
+          <td class="response-time">1725ms</td>
+          <td>1 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        <tr>
+          <td>赴山海</td>
+          <td class="success">成功</td>
+          <td class="response-time">2037ms</td>
+          <td>1 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        <tr>
+          <td>名侦探柯南</td>
+          <td class="success">成功</td>
+          <td class="response-time">1191ms</td>
+          <td>20 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        <tr>
+          <td>快乐大本营</td>
+          <td class="success">成功</td>
+          <td class="response-time">1213ms</td>
+          <td>13 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        </table>
+      </div>
+    
+      <div class="test-section">
+        <div class="test-title">详情测试</div>
+        <table>
+          <tr>
+            <th>关键词</th>
+            <th>状态</th>
+            <th>响应时间</th>
+            <th>错误信息</th>
+          </tr>
+    
+          <tr>
+            <td>星际穿越</td>
+            <td class="success">成功</td>
+            <td class="response-time">298ms</td>
+            <td class="error"></td>
+          </tr>
+        
+          <tr>
+            <td>赴山海</td>
+            <td class="success">成功</td>
+            <td class="response-time">500ms</td>
+            <td class="error"></td>
+          </tr>
+        
+          <tr>
+            <td>名侦探柯南</td>
+            <td class="success">成功</td>
+            <td class="response-time">421ms</td>
+            <td class="error"></td>
+          </tr>
+        
+          <tr>
+            <td>快乐大本营</td>
+            <td class="success">成功</td>
+            <td class="response-time">374ms</td>
+            <td class="error"></td>
+          </tr>
+        
+        </table>
+      </div>
+      
+      <div class="test-section">
+        <div class="test-title">流媒体链接测试</div>
+        <table>
+          <tr>
+            <th>关键词</th>
+            <th>成功率</th>
+            <th>平均响应时间</th>
+            <th>平均下载速度</th>
+          </tr>
+    
+          <tr>
+            <td>星际穿越</td>
+            <td>0/3</td>
+            <td class="response-time">N/A</td>
+            <td>N/A</td>
+          </tr>
+        
+          <tr>
+            <td>赴山海</td>
+            <td>0/5</td>
+            <td class="response-time">N/A</td>
+            <td>N/A</td>
+          </tr>
+        
+          <tr>
+            <td>名侦探柯南</td>
+            <td>0/5</td>
+            <td class="response-time">N/A</td>
+            <td>N/A</td>
+          </tr>
+        
+          <tr>
+            <td>快乐大本营</td>
+            <td>0/5</td>
+            <td class="response-time">N/A</td>
+            <td>N/A</td>
+          </tr>
+        
+        </table>
+      </div>
+      
+    </div>
+    
+    <div class="api-card">
+      <div class="api-header">
+        <div class="api-name">
+          <span class="rank ">#12</span> 非凡影视
+          <span class="api-score score-poor">30/100分</span>
+        </div>
+        <div class="api-url">http://ffzy5.tv/api.php/provide/vod (JSON)</div>
+      </div>
+      
+      <div class="score-details">
+        <div class="score-details-title">评分详情</div>
+        <div class="score-grid">
+          <div class="score-item">
+            <div class="score-item-title">搜索响应时间</div>
+            <div class="score-item-value">70/100 (权重得分: 7)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">详情响应时间</div>
+            <div class="score-item-value">70/100 (权重得分: 4)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">流媒体响应时间</div>
+            <div class="score-item-value">0/100 (权重得分: 0)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">下载速度</div>
+            <div class="score-item-value">0/100 (权重得分: 0)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">搜索成功率</div>
+            <div class="score-item-value">100/100 (权重得分: 6)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">详情成功率</div>
+            <div class="score-item-value">100/100 (权重得分: 6)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">流媒体成功率</div>
+            <div class="score-item-value">0/100 (权重得分: 0)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">搜索结果数量</div>
+            <div class="score-item-value">100/100 (权重得分: 15)</div>
+          </div>
+        </div>
+        
+        <div class="weights-info">
+          <div class="weights-title">当前权重配置</div>
+          <div class="weights-grid">
+            <div class="weight-item">搜索响应时间: 10%</div>
+            <div class="weight-item">详情响应时间: 5%</div>
+            <div class="weight-item">流媒体性能: 50%</div>
+            <div class="weight-item">成功率: 20%</div>
+            <div class="weight-item">结果数量: 15%</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="test-section">
+        <div class="test-title">搜索测试</div>
+        <table>
+          <tr>
+            <th>关键词</th>
+            <th>状态</th>
+            <th>响应时间</th>
+            <th>结果数量</th>
+            <th>错误信息</th>
+          </tr>
+    
+        <tr>
+          <td>星际穿越</td>
+          <td class="success">成功</td>
+          <td class="response-time">1872ms</td>
+          <td>2 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        <tr>
+          <td>赴山海</td>
+          <td class="success">成功</td>
+          <td class="response-time">1750ms</td>
+          <td>1 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        <tr>
+          <td>名侦探柯南</td>
+          <td class="success">成功</td>
+          <td class="response-time">1639ms</td>
+          <td>20 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        <tr>
+          <td>快乐大本营</td>
+          <td class="success">成功</td>
+          <td class="response-time">2013ms</td>
+          <td>13 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        </table>
+      </div>
+    
+      <div class="test-section">
+        <div class="test-title">详情测试</div>
+        <table>
+          <tr>
+            <th>关键词</th>
+            <th>状态</th>
+            <th>响应时间</th>
+            <th>错误信息</th>
+          </tr>
+    
+          <tr>
+            <td>星际穿越</td>
+            <td class="success">成功</td>
+            <td class="response-time">793ms</td>
+            <td class="error"></td>
+          </tr>
+        
+          <tr>
+            <td>赴山海</td>
+            <td class="success">成功</td>
+            <td class="response-time">553ms</td>
+            <td class="error"></td>
+          </tr>
+        
+          <tr>
+            <td>名侦探柯南</td>
+            <td class="success">成功</td>
+            <td class="response-time">898ms</td>
+            <td class="error"></td>
+          </tr>
+        
+          <tr>
+            <td>快乐大本营</td>
+            <td class="success">成功</td>
+            <td class="response-time">781ms</td>
+            <td class="error"></td>
+          </tr>
+        
+        </table>
+      </div>
+      
+      <div class="test-section">
+        <div class="test-title">流媒体链接测试</div>
+        <table>
+          <tr>
+            <th>关键词</th>
+            <th>成功率</th>
+            <th>平均响应时间</th>
+            <th>平均下载速度</th>
+          </tr>
+    
+          <tr>
+            <td>星际穿越</td>
+            <td>0/1</td>
+            <td class="response-time">N/A</td>
+            <td>N/A</td>
+          </tr>
+        
+          <tr>
+            <td>赴山海</td>
+            <td>0/5</td>
+            <td class="response-time">N/A</td>
+            <td>N/A</td>
+          </tr>
+        
+          <tr>
+            <td>名侦探柯南</td>
+            <td>0/5</td>
+            <td class="response-time">N/A</td>
+            <td>N/A</td>
+          </tr>
+        
+          <tr>
+            <td>快乐大本营</td>
+            <td>0/5</td>
+            <td class="response-time">N/A</td>
+            <td>N/A</td>
+          </tr>
+        
+        </table>
+      </div>
+      
+    </div>
+    
+    <div class="api-card">
+      <div class="api-header">
+        <div class="api-name">
+          <span class="rank ">#13</span> 最大资源
+          <span class="api-score score-poor">30/100分</span>
+        </div>
+        <div class="api-url">https://api.zuidapi.com/api.php/provide/vod (JSON)</div>
+      </div>
+      
+      <div class="score-details">
+        <div class="score-details-title">评分详情</div>
+        <div class="score-grid">
+          <div class="score-item">
+            <div class="score-item-title">搜索响应时间</div>
+            <div class="score-item-value">90/100 (权重得分: 9)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">详情响应时间</div>
+            <div class="score-item-value">100/100 (权重得分: 5)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">流媒体响应时间</div>
+            <div class="score-item-value">0/100 (权重得分: 0)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">下载速度</div>
+            <div class="score-item-value">0/100 (权重得分: 0)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">搜索成功率</div>
+            <div class="score-item-value">100/100 (权重得分: 6)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">详情成功率</div>
+            <div class="score-item-value">100/100 (权重得分: 6)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">流媒体成功率</div>
+            <div class="score-item-value">0/100 (权重得分: 0)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">搜索结果数量</div>
+            <div class="score-item-value">100/100 (权重得分: 15)</div>
+          </div>
+        </div>
+        
+        <div class="weights-info">
+          <div class="weights-title">当前权重配置</div>
+          <div class="weights-grid">
+            <div class="weight-item">搜索响应时间: 10%</div>
+            <div class="weight-item">详情响应时间: 5%</div>
+            <div class="weight-item">流媒体性能: 50%</div>
+            <div class="weight-item">成功率: 20%</div>
+            <div class="weight-item">结果数量: 15%</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="test-section">
+        <div class="test-title">搜索测试</div>
+        <table>
+          <tr>
+            <th>关键词</th>
+            <th>状态</th>
+            <th>响应时间</th>
+            <th>结果数量</th>
+            <th>错误信息</th>
+          </tr>
+    
+        <tr>
+          <td>星际穿越</td>
+          <td class="success">成功</td>
+          <td class="response-time">851ms</td>
+          <td>2 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        <tr>
+          <td>赴山海</td>
+          <td class="success">成功</td>
+          <td class="response-time">828ms</td>
+          <td>1 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        <tr>
+          <td>名侦探柯南</td>
+          <td class="success">成功</td>
+          <td class="response-time">459ms</td>
+          <td>20 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        <tr>
+          <td>快乐大本营</td>
+          <td class="success">成功</td>
+          <td class="response-time">792ms</td>
+          <td>13 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        </table>
+      </div>
+    
+      <div class="test-section">
+        <div class="test-title">详情测试</div>
+        <table>
+          <tr>
+            <th>关键词</th>
+            <th>状态</th>
+            <th>响应时间</th>
+            <th>错误信息</th>
+          </tr>
+    
+          <tr>
+            <td>星际穿越</td>
+            <td class="success">成功</td>
+            <td class="response-time">131ms</td>
+            <td class="error"></td>
+          </tr>
+        
+          <tr>
+            <td>赴山海</td>
+            <td class="success">成功</td>
+            <td class="response-time">201ms</td>
+            <td class="error"></td>
+          </tr>
+        
+          <tr>
+            <td>名侦探柯南</td>
+            <td class="success">成功</td>
+            <td class="response-time">153ms</td>
+            <td class="error"></td>
+          </tr>
+        
+          <tr>
+            <td>快乐大本营</td>
+            <td class="success">成功</td>
+            <td class="response-time">138ms</td>
+            <td class="error"></td>
+          </tr>
+        
+        </table>
+      </div>
+      
+      <div class="test-section">
+        <div class="test-title">流媒体链接测试</div>
+        <table>
+          <tr>
+            <th>关键词</th>
+            <th>成功率</th>
+            <th>平均响应时间</th>
+            <th>平均下载速度</th>
+          </tr>
+    
+          <tr>
+            <td>星际穿越</td>
+            <td>0/2</td>
+            <td class="response-time">N/A</td>
+            <td>N/A</td>
+          </tr>
+        
+          <tr>
+            <td>赴山海</td>
+            <td>0/5</td>
+            <td class="response-time">N/A</td>
+            <td>N/A</td>
+          </tr>
+        
+          <tr>
+            <td>名侦探柯南</td>
+            <td>0/5</td>
+            <td class="response-time">N/A</td>
+            <td>N/A</td>
+          </tr>
+        
+          <tr>
+            <td>快乐大本营</td>
+            <td>0/5</td>
+            <td class="response-time">N/A</td>
+            <td>N/A</td>
+          </tr>
+        
+        </table>
+      </div>
+      
+    </div>
+    
+    <div class="api-card">
+      <div class="api-header">
+        <div class="api-name">
+          <span class="rank ">#14</span> 无尽资源
+          <span class="api-score score-poor">30/100分</span>
+        </div>
+        <div class="api-url">https://api.wujinapi.me/api.php/provide/vod (JSON)</div>
+      </div>
+      
+      <div class="score-details">
+        <div class="score-details-title">评分详情</div>
+        <div class="score-grid">
+          <div class="score-item">
+            <div class="score-item-title">搜索响应时间</div>
+            <div class="score-item-value">90/100 (权重得分: 9)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">详情响应时间</div>
+            <div class="score-item-value">100/100 (权重得分: 5)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">流媒体响应时间</div>
+            <div class="score-item-value">0/100 (权重得分: 0)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">下载速度</div>
+            <div class="score-item-value">0/100 (权重得分: 0)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">搜索成功率</div>
+            <div class="score-item-value">100/100 (权重得分: 6)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">详情成功率</div>
+            <div class="score-item-value">100/100 (权重得分: 6)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">流媒体成功率</div>
+            <div class="score-item-value">0/100 (权重得分: 0)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">搜索结果数量</div>
+            <div class="score-item-value">100/100 (权重得分: 15)</div>
+          </div>
+        </div>
+        
+        <div class="weights-info">
+          <div class="weights-title">当前权重配置</div>
+          <div class="weights-grid">
+            <div class="weight-item">搜索响应时间: 10%</div>
+            <div class="weight-item">详情响应时间: 5%</div>
+            <div class="weight-item">流媒体性能: 50%</div>
+            <div class="weight-item">成功率: 20%</div>
+            <div class="weight-item">结果数量: 15%</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="test-section">
+        <div class="test-title">搜索测试</div>
+        <table>
+          <tr>
+            <th>关键词</th>
+            <th>状态</th>
+            <th>响应时间</th>
+            <th>结果数量</th>
+            <th>错误信息</th>
+          </tr>
+    
+        <tr>
+          <td>星际穿越</td>
+          <td class="success">成功</td>
+          <td class="response-time">844ms</td>
+          <td>2 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        <tr>
+          <td>赴山海</td>
+          <td class="success">成功</td>
+          <td class="response-time">575ms</td>
+          <td>2 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        <tr>
+          <td>名侦探柯南</td>
+          <td class="success">成功</td>
+          <td class="response-time">563ms</td>
+          <td>20 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        <tr>
+          <td>快乐大本营</td>
+          <td class="success">成功</td>
+          <td class="response-time">805ms</td>
+          <td>13 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        </table>
+      </div>
+    
+      <div class="test-section">
+        <div class="test-title">详情测试</div>
+        <table>
+          <tr>
+            <th>关键词</th>
+            <th>状态</th>
+            <th>响应时间</th>
+            <th>错误信息</th>
+          </tr>
+    
+          <tr>
+            <td>星际穿越</td>
+            <td class="success">成功</td>
+            <td class="response-time">238ms</td>
+            <td class="error"></td>
+          </tr>
+        
+          <tr>
+            <td>赴山海</td>
+            <td class="success">成功</td>
+            <td class="response-time">243ms</td>
+            <td class="error"></td>
+          </tr>
+        
+          <tr>
+            <td>名侦探柯南</td>
+            <td class="success">成功</td>
+            <td class="response-time">117ms</td>
+            <td class="error"></td>
+          </tr>
+        
+          <tr>
+            <td>快乐大本营</td>
+            <td class="success">成功</td>
+            <td class="response-time">247ms</td>
+            <td class="error"></td>
+          </tr>
+        
+        </table>
+      </div>
+      
+      <div class="test-section">
+        <div class="test-title">流媒体链接测试</div>
+        <table>
+          <tr>
+            <th>关键词</th>
+            <th>成功率</th>
+            <th>平均响应时间</th>
+            <th>平均下载速度</th>
+          </tr>
+    
+          <tr>
+            <td>星际穿越</td>
+            <td>0/1</td>
+            <td class="response-time">N/A</td>
+            <td>N/A</td>
+          </tr>
+        
+          <tr>
+            <td>赴山海</td>
+            <td>0/5</td>
+            <td class="response-time">N/A</td>
+            <td>N/A</td>
+          </tr>
+        
+          <tr>
+            <td>名侦探柯南</td>
+            <td>0/5</td>
+            <td class="response-time">N/A</td>
+            <td>N/A</td>
+          </tr>
+        
+          <tr>
+            <td>快乐大本营</td>
+            <td>0/5</td>
+            <td class="response-time">N/A</td>
+            <td>N/A</td>
+          </tr>
+        
+        </table>
+      </div>
+      
+    </div>
+    
+    <div class="api-card">
+      <div class="api-header">
+        <div class="api-name">
+          <span class="rank ">#15</span> iKun资源
+          <span class="api-score score-poor">30/100分</span>
+        </div>
+        <div class="api-url">https://ikunzyapi.com/api.php/provide/vod (JSON)</div>
+      </div>
+      
+      <div class="score-details">
+        <div class="score-details-title">评分详情</div>
+        <div class="score-grid">
+          <div class="score-item">
+            <div class="score-item-title">搜索响应时间</div>
+            <div class="score-item-value">80/100 (权重得分: 8)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">详情响应时间</div>
+            <div class="score-item-value">50/100 (权重得分: 3)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">流媒体响应时间</div>
+            <div class="score-item-value">0/100 (权重得分: 0)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">下载速度</div>
+            <div class="score-item-value">0/100 (权重得分: 0)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">搜索成功率</div>
+            <div class="score-item-value">100/100 (权重得分: 6)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">详情成功率</div>
+            <div class="score-item-value">100/100 (权重得分: 6)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">流媒体成功率</div>
+            <div class="score-item-value">0/100 (权重得分: 0)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">搜索结果数量</div>
+            <div class="score-item-value">90/100 (权重得分: 14)</div>
+          </div>
+        </div>
+        
+        <div class="weights-info">
+          <div class="weights-title">当前权重配置</div>
+          <div class="weights-grid">
+            <div class="weight-item">搜索响应时间: 10%</div>
+            <div class="weight-item">详情响应时间: 5%</div>
+            <div class="weight-item">流媒体性能: 50%</div>
+            <div class="weight-item">成功率: 20%</div>
+            <div class="weight-item">结果数量: 15%</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="test-section">
+        <div class="test-title">搜索测试</div>
+        <table>
+          <tr>
+            <th>关键词</th>
+            <th>状态</th>
+            <th>响应时间</th>
+            <th>结果数量</th>
+            <th>错误信息</th>
+          </tr>
+    
+        <tr>
+          <td>星际穿越</td>
+          <td class="success">成功</td>
+          <td class="response-time">889ms</td>
+          <td>3 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        <tr>
+          <td>赴山海</td>
+          <td class="success">成功</td>
+          <td class="response-time">947ms</td>
+          <td>1 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        <tr>
+          <td>名侦探柯南</td>
+          <td class="success">成功</td>
+          <td class="response-time">1189ms</td>
+          <td>20 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        <tr>
+          <td>快乐大本营</td>
+          <td class="success">成功</td>
+          <td class="response-time">999ms</td>
+          <td>0 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        </table>
+      </div>
+    
+      <div class="test-section">
+        <div class="test-title">详情测试</div>
+        <table>
+          <tr>
+            <th>关键词</th>
+            <th>状态</th>
+            <th>响应时间</th>
+            <th>错误信息</th>
+          </tr>
+    
+          <tr>
+            <td>星际穿越</td>
+            <td class="success">成功</td>
+            <td class="response-time">1008ms</td>
+            <td class="error"></td>
+          </tr>
+        
+          <tr>
+            <td>赴山海</td>
+            <td class="success">成功</td>
+            <td class="response-time">994ms</td>
+            <td class="error"></td>
+          </tr>
+        
+          <tr>
+            <td>名侦探柯南</td>
+            <td class="success">成功</td>
+            <td class="response-time">1694ms</td>
+            <td class="error"></td>
+          </tr>
+        
+        </table>
+      </div>
+      
+      <div class="test-section">
+        <div class="test-title">流媒体链接测试</div>
+        <table>
+          <tr>
+            <th>关键词</th>
+            <th>成功率</th>
+            <th>平均响应时间</th>
+            <th>平均下载速度</th>
+          </tr>
+    
+          <tr>
+            <td>星际穿越</td>
+            <td>0/1</td>
+            <td class="response-time">N/A</td>
+            <td>N/A</td>
+          </tr>
+        
+          <tr>
+            <td>赴山海</td>
+            <td>0/5</td>
+            <td class="response-time">N/A</td>
+            <td>N/A</td>
+          </tr>
+        
+          <tr>
+            <td>名侦探柯南</td>
+            <td>0/5</td>
+            <td class="response-time">N/A</td>
+            <td>N/A</td>
+          </tr>
+        
+        </table>
+      </div>
+      
+    </div>
+    
+    <div class="api-card">
+      <div class="api-header">
+        <div class="api-name">
+          <span class="rank ">#16</span> 旺旺短剧
+          <span class="api-score score-poor">16/100分</span>
+        </div>
+        <div class="api-url">https://wwzy.tv/api.php/provide/vod (JSON)</div>
+      </div>
+      
+      <div class="score-details">
+        <div class="score-details-title">评分详情</div>
+        <div class="score-grid">
+          <div class="score-item">
+            <div class="score-item-title">搜索响应时间</div>
+            <div class="score-item-value">100/100 (权重得分: 10)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">详情响应时间</div>
+            <div class="score-item-value">0/100 (权重得分: 0)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">流媒体响应时间</div>
+            <div class="score-item-value">0/100 (权重得分: 0)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">下载速度</div>
+            <div class="score-item-value">0/100 (权重得分: 0)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">搜索成功率</div>
+            <div class="score-item-value">100/100 (权重得分: 6)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">详情成功率</div>
+            <div class="score-item-value">0/100 (权重得分: 0)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">流媒体成功率</div>
+            <div class="score-item-value">0/100 (权重得分: 0)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">搜索结果数量</div>
+            <div class="score-item-value">0/100 (权重得分: 0)</div>
+          </div>
+        </div>
+        
+        <div class="weights-info">
+          <div class="weights-title">当前权重配置</div>
+          <div class="weights-grid">
+            <div class="weight-item">搜索响应时间: 10%</div>
+            <div class="weight-item">详情响应时间: 5%</div>
+            <div class="weight-item">流媒体性能: 50%</div>
+            <div class="weight-item">成功率: 20%</div>
+            <div class="weight-item">结果数量: 15%</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="test-section">
+        <div class="test-title">搜索测试</div>
+        <table>
+          <tr>
+            <th>关键词</th>
+            <th>状态</th>
+            <th>响应时间</th>
+            <th>结果数量</th>
+            <th>错误信息</th>
+          </tr>
+    
+        <tr>
+          <td>星际穿越</td>
+          <td class="success">成功</td>
+          <td class="response-time">237ms</td>
+          <td>0 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        <tr>
+          <td>赴山海</td>
+          <td class="success">成功</td>
+          <td class="response-time">248ms</td>
+          <td>0 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        <tr>
+          <td>名侦探柯南</td>
+          <td class="success">成功</td>
+          <td class="response-time">232ms</td>
+          <td>0 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        <tr>
+          <td>快乐大本营</td>
+          <td class="success">成功</td>
+          <td class="response-time">232ms</td>
+          <td>0 <span class="result-count">条</span></td>
+          <td class="error"></td>
+        </tr>
+      
+        </table>
+      </div>
+    
+    </div>
+    
+    <div class="api-card">
+      <div class="api-header">
+        <div class="api-name">
+          <span class="rank ">#17</span> 魔爪资源
+          <span class="api-score score-poor">0/100分</span>
+        </div>
+        <div class="api-url">https://mozhuazy.com/api.php/provide/vod (JSON)</div>
+      </div>
+      
+      <div class="score-details">
+        <div class="score-details-title">评分详情</div>
+        <div class="score-grid">
+          <div class="score-item">
+            <div class="score-item-title">搜索响应时间</div>
+            <div class="score-item-value">0/100 (权重得分: 0)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">详情响应时间</div>
+            <div class="score-item-value">0/100 (权重得分: 0)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">流媒体响应时间</div>
+            <div class="score-item-value">0/100 (权重得分: 0)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">下载速度</div>
+            <div class="score-item-value">0/100 (权重得分: 0)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">搜索成功率</div>
+            <div class="score-item-value">0/100 (权重得分: 0)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">详情成功率</div>
+            <div class="score-item-value">0/100 (权重得分: 0)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">流媒体成功率</div>
+            <div class="score-item-value">0/100 (权重得分: 0)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">搜索结果数量</div>
+            <div class="score-item-value">0/100 (权重得分: 0)</div>
+          </div>
+        </div>
+        
+        <div class="weights-info">
+          <div class="weights-title">当前权重配置</div>
+          <div class="weights-grid">
+            <div class="weight-item">搜索响应时间: 10%</div>
+            <div class="weight-item">详情响应时间: 5%</div>
+            <div class="weight-item">流媒体性能: 50%</div>
+            <div class="weight-item">成功率: 20%</div>
+            <div class="weight-item">结果数量: 15%</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="test-section">
+        <div class="test-title">搜索测试</div>
+        <table>
+          <tr>
+            <th>关键词</th>
+            <th>状态</th>
+            <th>响应时间</th>
+            <th>结果数量</th>
+            <th>错误信息</th>
+          </tr>
+    
+        <tr>
+          <td>星际穿越</td>
+          <td class="error">失败</td>
+          <td class="response-time">N/A</td>
+          <td>0 <span class="result-count">条</span></td>
+          <td class="error">所有尝试均失败</td>
+        </tr>
+      
+        <tr>
+          <td>赴山海</td>
+          <td class="error">失败</td>
+          <td class="response-time">N/A</td>
+          <td>0 <span class="result-count">条</span></td>
+          <td class="error">所有尝试均失败</td>
+        </tr>
+      
+        <tr>
+          <td>名侦探柯南</td>
+          <td class="error">失败</td>
+          <td class="response-time">N/A</td>
+          <td>0 <span class="result-count">条</span></td>
+          <td class="error">所有尝试均失败</td>
+        </tr>
+      
+        <tr>
+          <td>快乐大本营</td>
+          <td class="error">失败</td>
+          <td class="response-time">N/A</td>
+          <td>0 <span class="result-count">条</span></td>
+          <td class="error">所有尝试均失败</td>
+        </tr>
+      
+        </table>
+      </div>
+    
+    </div>
+    
+    <div class="api-card">
+      <div class="api-header">
+        <div class="api-name">
+          <span class="rank ">#18</span> 樱花资源
+          <span class="api-score score-poor">0/100分</span>
+        </div>
+        <div class="api-url">https://m3u8.apiyhzy.com/api.php/provide/vod (JSON)</div>
+      </div>
+      
+      <div class="score-details">
+        <div class="score-details-title">评分详情</div>
+        <div class="score-grid">
+          <div class="score-item">
+            <div class="score-item-title">搜索响应时间</div>
+            <div class="score-item-value">0/100 (权重得分: 0)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">详情响应时间</div>
+            <div class="score-item-value">0/100 (权重得分: 0)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">流媒体响应时间</div>
+            <div class="score-item-value">0/100 (权重得分: 0)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">下载速度</div>
+            <div class="score-item-value">0/100 (权重得分: 0)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">搜索成功率</div>
+            <div class="score-item-value">0/100 (权重得分: 0)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">详情成功率</div>
+            <div class="score-item-value">0/100 (权重得分: 0)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">流媒体成功率</div>
+            <div class="score-item-value">0/100 (权重得分: 0)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">搜索结果数量</div>
+            <div class="score-item-value">0/100 (权重得分: 0)</div>
+          </div>
+        </div>
+        
+        <div class="weights-info">
+          <div class="weights-title">当前权重配置</div>
+          <div class="weights-grid">
+            <div class="weight-item">搜索响应时间: 10%</div>
+            <div class="weight-item">详情响应时间: 5%</div>
+            <div class="weight-item">流媒体性能: 50%</div>
+            <div class="weight-item">成功率: 20%</div>
+            <div class="weight-item">结果数量: 15%</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="test-section">
+        <div class="test-title">搜索测试</div>
+        <table>
+          <tr>
+            <th>关键词</th>
+            <th>状态</th>
+            <th>响应时间</th>
+            <th>结果数量</th>
+            <th>错误信息</th>
+          </tr>
+    
+        <tr>
+          <td>星际穿越</td>
+          <td class="error">失败</td>
+          <td class="response-time">N/A</td>
+          <td>0 <span class="result-count">条</span></td>
+          <td class="error">所有尝试均失败</td>
+        </tr>
+      
+        <tr>
+          <td>赴山海</td>
+          <td class="error">失败</td>
+          <td class="response-time">N/A</td>
+          <td>0 <span class="result-count">条</span></td>
+          <td class="error">所有尝试均失败</td>
+        </tr>
+      
+        <tr>
+          <td>名侦探柯南</td>
+          <td class="error">失败</td>
+          <td class="response-time">N/A</td>
+          <td>0 <span class="result-count">条</span></td>
+          <td class="error">所有尝试均失败</td>
+        </tr>
+      
+        <tr>
+          <td>快乐大本营</td>
+          <td class="error">失败</td>
+          <td class="response-time">N/A</td>
+          <td>0 <span class="result-count">条</span></td>
+          <td class="error">所有尝试均失败</td>
+        </tr>
+      
+        </table>
+      </div>
+    
+    </div>
+    
+    <div class="api-card">
+      <div class="api-header">
+        <div class="api-name">
+          <span class="rank ">#19</span> 百度资源
+          <span class="api-score score-poor">0/100分</span>
+        </div>
+        <div class="api-url">https://api.apibdzy.com/api.php/provide/vod (JSON)</div>
+      </div>
+      
+      <div class="score-details">
+        <div class="score-details-title">评分详情</div>
+        <div class="score-grid">
+          <div class="score-item">
+            <div class="score-item-title">搜索响应时间</div>
+            <div class="score-item-value">0/100 (权重得分: 0)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">详情响应时间</div>
+            <div class="score-item-value">0/100 (权重得分: 0)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">流媒体响应时间</div>
+            <div class="score-item-value">0/100 (权重得分: 0)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">下载速度</div>
+            <div class="score-item-value">0/100 (权重得分: 0)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">搜索成功率</div>
+            <div class="score-item-value">0/100 (权重得分: 0)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">详情成功率</div>
+            <div class="score-item-value">0/100 (权重得分: 0)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">流媒体成功率</div>
+            <div class="score-item-value">0/100 (权重得分: 0)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">搜索结果数量</div>
+            <div class="score-item-value">0/100 (权重得分: 0)</div>
+          </div>
+        </div>
+        
+        <div class="weights-info">
+          <div class="weights-title">当前权重配置</div>
+          <div class="weights-grid">
+            <div class="weight-item">搜索响应时间: 10%</div>
+            <div class="weight-item">详情响应时间: 5%</div>
+            <div class="weight-item">流媒体性能: 50%</div>
+            <div class="weight-item">成功率: 20%</div>
+            <div class="weight-item">结果数量: 15%</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="test-section">
+        <div class="test-title">搜索测试</div>
+        <table>
+          <tr>
+            <th>关键词</th>
+            <th>状态</th>
+            <th>响应时间</th>
+            <th>结果数量</th>
+            <th>错误信息</th>
+          </tr>
+    
+        <tr>
+          <td>星际穿越</td>
+          <td class="error">失败</td>
+          <td class="response-time">N/A</td>
+          <td>0 <span class="result-count">条</span></td>
+          <td class="error">所有尝试均失败</td>
+        </tr>
+      
+        <tr>
+          <td>赴山海</td>
+          <td class="error">失败</td>
+          <td class="response-time">N/A</td>
+          <td>0 <span class="result-count">条</span></td>
+          <td class="error">所有尝试均失败</td>
+        </tr>
+      
+        <tr>
+          <td>名侦探柯南</td>
+          <td class="error">失败</td>
+          <td class="response-time">N/A</td>
+          <td>0 <span class="result-count">条</span></td>
+          <td class="error">所有尝试均失败</td>
+        </tr>
+      
+        <tr>
+          <td>快乐大本营</td>
+          <td class="error">失败</td>
+          <td class="response-time">N/A</td>
+          <td>0 <span class="result-count">条</span></td>
+          <td class="error">所有尝试均失败</td>
+        </tr>
+      
+        </table>
+      </div>
+    
+    </div>
+    
+    <div class="scoring-explanation">
+      <div class="scoring-explanation-title">评分标准说明</div>
+      <p>本测试报告使用100分制评分系统，结合用户配置的权重动态计算各个API的综合得分。评分越高，表示API整体性能越好。</p>
+      
+      <div class="scoring-subtitle">搜索响应时间评分标准</div>
+      <table class="scoring-table">
+        <tr>
+          <th>响应时间</th>
+          <th>得分（满分100）</th>
+        </tr>
+        <tr><td>≤500ms</td><td>100分</td></tr>
+        <tr><td>501-1000ms</td><td>90分</td></tr>
+        <tr><td>1001-1500ms</td><td>80分</td></tr>
+        <tr><td>1501-2000ms</td><td>70分</td></tr>
+        <tr><td>2001-3000ms</td><td>50分</td></tr>
+        <tr><td>3001-5000ms</td><td>30分</td></tr>
+        <tr><td>>5000ms</td><td>10分</td></tr>
+        <tr><td>超时或失败</td><td>0分</td></tr>
+      </table>
+      
+      <div class="scoring-subtitle">详情响应时间评分标准</div>
+      <table class="scoring-table">
+        <tr>
+          <th>响应时间</th>
+          <th>得分（满分100）</th>
+        </tr>
+        <tr><td>≤300ms</td><td>100分</td></tr>
+        <tr><td>301-600ms</td><td>90分</td></tr>
+        <tr><td>601-1000ms</td><td>70分</td></tr>
+        <tr><td>1001-1500ms</td><td>50分</td></tr>
+        <tr><td>1501-2000ms</td><td>30分</td></tr>
+        <tr><td>2001-3000ms</td><td>20分</td></tr>
+        <tr><td>>3000ms</td><td>10分</td></tr>
+        <tr><td>超时或失败</td><td>0分</td></tr>
+      </table>
+      
+      <div class="scoring-subtitle">流媒体响应时间评分标准</div>
+      <table class="scoring-table">
+        <tr>
+          <th>响应时间</th>
+          <th>得分（满分100）</th>
+        </tr>
+        <tr><td>≤300ms</td><td>100分</td></tr>
+        <tr><td>301-600ms</td><td>90分</td></tr>
+        <tr><td>601-1000ms</td><td>80分</td></tr>
+        <tr><td>1001-1500ms</td><td>70分</td></tr>
+        <tr><td>1501-2000ms</td><td>60分</td></tr>
+        <tr><td>2001-3000ms</td><td>40分</td></tr>
+        <tr><td>3001-5000ms</td><td>20分</td></tr>
+        <tr><td>>5000ms</td><td>10分</td></tr>
+        <tr><td>超时或失败</td><td>0分</td></tr>
+      </table>
+      
+      <div class="scoring-subtitle">下载速度评分标准</div>
+      <table class="scoring-table">
+        <tr>
+          <th>下载速度</th>
+          <th>得分（满分100）</th>
+        </tr>
+        <tr><td>≥10MB/s</td><td>100分</td></tr>
+        <tr><td>5-10MB/s</td><td>90分</td></tr>
+        <tr><td>2-5MB/s</td><td>80分</td></tr>
+        <tr><td>1-2MB/s</td><td>70分</td></tr>
+        <tr><td>500KB/s-1MB/s</td><td>60分</td></tr>
+        <tr><td>200-500KB/s</td><td>50分</td></tr>
+        <tr><td>100-200KB/s</td><td>40分</td></tr>
+        <tr><td>50-100KB/s</td><td>20分</td></tr>
+        <tr><td><50KB/s</td><td>10分</td></tr>
+        <tr><td>无法测量</td><td>0分</td></tr>
+      </table>
+      
+      <div class="scoring-subtitle">成功率评分标准</div>
+      <table class="scoring-table">
+        <tr>
+          <th>成功率</th>
+          <th>得分（满分100）</th>
+        </tr>
+        <tr><td>100%</td><td>100分</td></tr>
+        <tr><td>80-99%</td><td>90分</td></tr>
+        <tr><td>60-79%</td><td>70分</td></tr>
+        <tr><td>40-59%</td><td>50分</td></tr>
+        <tr><td>20-39%</td><td>30分</td></tr>
+        <tr><td>1-19%</td><td>10分</td></tr>
+        <tr><td>0%</td><td>0分</td></tr>
+      </table>
+      
+      <div class="scoring-subtitle">搜索结果数量评分标准</div>
+      <table class="scoring-table">
+        <tr>
+          <th>结果数量</th>
+          <th>得分（满分100）</th>
+        </tr>
+        <tr><td>≥30个</td><td>100分</td></tr>
+        <tr><td>20-29个</td><td>90分</td></tr>
+        <tr><td>15-19个</td><td>80分</td></tr>
+        <tr><td>10-14个</td><td>70分</td></tr>
+        <tr><td>5-9个</td><td>50分</td></tr>
+        <tr><td>2-4个</td><td>30分</td></tr>
+        <tr><td>1个</td><td>10分</td></tr>
+        <tr><td>0个</td><td>0分</td></tr>
+      </table>
+      
+      <div class="scoring-subtitle">综合得分计算方法</div>
+      <p>1. 分别计算各项指标的基础得分（满分100分）</p>
+      <p>2. 根据权重计算各项指标的加权得分</p>
+      <p>3. 汇总所有加权得分，得到最终的100分制评分</p>
+      
+      <div class="footnote">注：部分项目（如成功率和流媒体性能）进一步拆分为多个子项目，按一定比例计算。本评分系统会随用户配置的权重动态调整。</div>
+    </div>
+    
+    <div class="footer">
+      <p>影视采集接口测速工具 v1.0 | 100分制动态权重评分系统 v2.0</p>
+      <p>评分系统规则：搜索响应时间、详情响应时间、流媒体响应时间、下载速度、搜索/详情/流媒体成功率、搜索结果数量</p>
+    </div>
+  </body>
+  </html>
