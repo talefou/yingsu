@@ -11,118 +11,98 @@ module.exports = {
   // 采集接口配置列表
   apiList: [
     {
-      name: "魔爪",
-      api: "https://mozhuazy.com/api.php/provide/vod/",
+      name: "电影天堂",
+      api: "http://caiji.dyttzyapi.com/api.php/provide/vod",
       isXml: false
     },
     {
-      name: "最大",
-      api: "https://api.zuidapi.com/api.php/provide/vod/from/zuidam3u8/",
+      name: "如意资源",
+      api: "http://cj.rycjapi.com/api.php/provide/vod",
       isXml: false
     },
     {
-      name: "无线",
-      api: "https://api.wuxianzy.net/api.php/provide/vod/m3u8/at/json",
+      name: "暴风资源",
+      api: "https://bfzyapi.com/api.php/provide/vod",
       isXml: false
     },
     {
-      name: "速播",
-      api: "https://www.subocaiji.com/api.php/provide/vod/from/subm3u8/at/xml/",
-      isXml: true
-    },
-    {
-      name: "无尽",
-      api: "https://api.wujinapi.me/api.php/provide/vod/from/wjm3u8/at/xml/",
-      isXml: true
-    },
-    {
-      name: "金马",
-      api: "https://api.jmzy.com/api.php/provide/vod/",
+      name: "天涯资源",
+      api: "https://tyyszy.com/api.php/provide/vod",
       isXml: false
     },
     {
-      name: "爱奇艺",
-      api: "https://iqiyizyapi.com/api.php/provide/vod",
+      name: "非凡影视",
+      api: "http://ffzy5.tv/api.php/provide/vod",
       isXml: false
     },
     {
-      name: "暴风",
-      api: "https://bfzyapi.com/api.php/provide/vod/",
+      name: "360资源",
+      api: "https://360zy.com/api.php/provide/vod",
       isXml: false
     },
     {
-      name: "黑木耳",
-      api: "https://json02.heimuer.xyz/api.php/provide/vod",
+      name: "茅台资源",
+      api: "https://caiji.maotaizy.cc/api.php/provide/vod",
       isXml: false
     },
     {
-      name: "淘片",
-      api: "https://taopianapi.com/cjapi/mc/vod/json/m3u8.html",
+      name: "卧龙资源",
+      api: "https://wolongzyw.com/api.php/provide/vod",
       isXml: false
     },
     {
-      name: "量子",
-      api: "https://cj.lziapi.com/api.php/provide/vod/from/lzm3u8/at/xml/",
-      isXml: true
-    },
-    {
-      name: "卧龙",
-      api: "https://collect.wolongzy.cc/api.php/provide/vod/",
+      name: "极速资源",
+      api: "https://jszyapi.com/api.php/provide/vod",
       isXml: false
     },
     {
-      name: "魔都",
+      name: "豆瓣资源",
+      api: "https://dbzy.tv/api.php/provide/vod",
+      isXml: false
+    },
+    {
+      name: "魔爪资源",
+      api: "https://mozhuazy.com/api.php/provide/vod",
+      isXml: false
+    },
+    {
+      name: "魔都资源",
       api: "https://www.mdzyapi.com/api.php/provide/vod",
       isXml: false
     },
     {
-      name: "非凡",
-      api: "http://api.ffzyapi.com/api.php/provide/vod/from/ffm3u8/at/json/",
+      name: "最大资源",
+      api: "https://api.zuidapi.com/api.php/provide/vod",
       isXml: false
     },
     {
-      name: "爱坤",
-      api: "https://ikunzy.vip/api.php/provide/vod/",
+      name: "樱花资源",
+      api: "https://m3u8.apiyhzy.com/api.php/provide/vod",
       isXml: false
     },
     {
-      name: "豆瓣",
-      api: "https://caiji.dbzy5.com/api.php/provide/vod/at/josn/",
+      name: "无尽资源",
+      api: "https://api.wujinapi.me/api.php/provide/vod",
       isXml: false
     },
     {
-      name: "茅台",
-      api: "https://caiji.maotaizy.cc/api.php/provide/vod/at/josn/",
+      name: "旺旺短剧",
+      api: "https://wwzy.tv/api.php/provide/vod",
       isXml: false
     },
     {
-      name: "极速",
-      api: "https://jszyapi.com/api.php/provide/vod/from/jsm3u8/at/json",
+      name: "iKun资源",
+      api: "https://ikunzyapi.com/api.php/provide/vod",
       isXml: false
     },
     {
-      name: "华为",
-      api: "https://cjhwba.com/api.php/provide/vod/",
+      name: "量子资源",
+      api: "https://cj.lziapi.com/api.php/provide/vod",
       isXml: false
     },
     {
-      name: "360",
-      api: "https://360zy.com/api.php/provide/vod/",
-      isXml: false
-    },
-    {
-      name: "如意",
-      api: "https://cj.rycjapi.com/api.php/provide/vod/from/rym3u8/at/json/",
-      isXml: false
-    },
-    {
-      name: "天堂",
-      api: "http://caiji.dyttzyapi.com/api.php/provide/vod/from/dyttm3u8/at/json/",
-      isXml: false
-    },
-    {
-      name: "天涯",
-      api: "https://tyyszyapi.com/api.php/provide/vod/",
+      name: "百度资源",
+      api: "https://api.apibdzy.com/api.php/provide/vod",
       isXml: false
     }
   ],
@@ -171,4 +151,4 @@ module.exports = {
       successRateThreshold: 80  // 成功率阈值（百分比）
     }
   }
-}; 
+};
