@@ -116,7 +116,7 @@ module.exports = {
       {
         name: "搜索测试",
         enabled: true,
-        keywords: ["柯南", "龙珠", "火影", "宝可梦"]
+        keywords: ["星际穿越", "赴山海", "名侦探柯南", "快乐大本营"]
       },
       {
         name: "详情测试",
