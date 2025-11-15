@@ -116,7 +116,7 @@ module.exports = {
       {
         name: "搜索测试",
         enabled: true,
-        keywords: ["星际穿越", "赴山海", "名侦探柯南", "快乐大本营"]
+        keywords: ["肖申克的救赎", "泰坦尼克号", "星际穿越", "寻梦环游记"]
       },
       {
         name: "详情测试",
