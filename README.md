@@ -12,8 +12,8 @@
 - 根据综合评分对接口进行排序，可自定义权重
 - 生成详细的 HTML 和 JSON 格式报告
 
-## html测速报告示例
-[测速报告](https://bucket-2010-2715.nb-1s.enzonix.com/speed-test-report-2025-06-17T09-20-46-450Z.html)
+## 网页测速报告示例
+[测速报告](https://speed.vayfou.cn)
 
 ## 使用方法
 
