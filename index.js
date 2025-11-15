@@ -1026,6 +1026,7 @@ function generateReport(results, sortedResults) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>影视采集接口测速报告</title>
+    <link rel="icon" href="https://tv.vayfou.cn/favicon.ico" type="image/x-icon">
     <style>
       body {
         font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
