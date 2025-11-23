@@ -4,7 +4,7 @@ on:
   push:
     branches: [ main ]
   schedule:
-    - cron: '0 0 * * 1'  # 每周一执行
+    - cron: '0 0 * * *'  # 每天执行一次
 
 jobs:
   build-and-push:
