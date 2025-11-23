@@ -84,6 +84,11 @@ module.exports = {
       name: "量子资源",
       api: "https://cj.lziapi.com/api.php/provide/vod",
       isXml: false
+    },
+    {
+      name: "红牛资源",
+      api: "https://www.hongniuzy3.com/api.php/provide/vod",
+      isXml: false
     }
   ],
   
