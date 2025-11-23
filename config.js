@@ -89,6 +89,16 @@ module.exports = {
       name: "红牛资源",
       api: "https://www.hongniuzy3.com/api.php/provide/vod",
       isXml: false
+    },
+    {
+      name: "新浪资源",
+      api: "https://api.xinlangapi.com/xinlangapi.php/provide/vod",
+      isXml: false
+    },
+    {
+      name: "U酷资源",
+      api: "https://api.ukuapi88.com/api.php/provide/vod",
+      isXml: false
     }
   ],
   
