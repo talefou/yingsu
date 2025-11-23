@@ -61,11 +61,6 @@ module.exports = {
       isXml: false
     },
     {
-      name: "魔爪资源",
-      api: "https://mozhuazy.com/api.php/provide/vod",
-      isXml: false
-    },
-    {
       name: "魔都资源",
       api: "https://www.mdzyapi.com/api.php/provide/vod",
       isXml: false
@@ -76,18 +71,8 @@ module.exports = {
       isXml: false
     },
     {
-      name: "樱花资源",
-      api: "https://m3u8.apiyhzy.com/api.php/provide/vod",
-      isXml: false
-    },
-    {
       name: "无尽资源",
       api: "https://api.wujinapi.me/api.php/provide/vod",
-      isXml: false
-    },
-    {
-      name: "旺旺短剧",
-      api: "https://wwzy.tv/api.php/provide/vod",
       isXml: false
     },
     {
@@ -98,11 +83,6 @@ module.exports = {
     {
       name: "量子资源",
       api: "https://cj.lziapi.com/api.php/provide/vod",
-      isXml: false
-    },
-    {
-      name: "百度资源",
-      api: "https://api.apibdzy.com/api.php/provide/vod",
       isXml: false
     }
   ],
