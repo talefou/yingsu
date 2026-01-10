@@ -2,7 +2,7 @@ name: Generate Reports Branch
 
 于:
   push:
-    分支: [ main ]
+    branches: [ main ]
   schedule:
     - cron: '0 * * * *'  # 每小时执行一次
 
