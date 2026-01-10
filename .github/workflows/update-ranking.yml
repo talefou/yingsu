@@ -1,0 +1,38 @@
+name: Update Ranking
+
+on:
+  schedule:
+    - cron: '0 * * * *'         # 每小时执行一次
+  workflow_dispatch:            # 支持手动触发
+
+jobs:
+  build-and-update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: reports
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests aiohttp tenacity
+
+      - name: Generate ranking
+        run: python .github/scripts/generate_ranking.py
+
+      - name: Commit result if changed
+        run: |
+          git config user.name "GitHub Action Bot"
+          git config user.email "action@github.com"
+          
+          git add result.json
+          git diff --staged --quiet || git commit -m "chore: auto update source ranking [$(date '+%Y-%m-%d %H:%M')]"
+          git push origin HEAD:reports
