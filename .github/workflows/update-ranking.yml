@@ -1,9 +1,9 @@
-name: Update Ranking
+name: Update-Ranking
 
 on:
   schedule:
-    - cron: '0 * * * *'         # 每小时执行一次
-  workflow_dispatch:            # 支持手动触发
+    - cron: '0 * * * *'
+  workflow_dispatch:
 
 jobs:
   build-and-update:
@@ -12,10 +12,11 @@ jobs:
       contents: write
 
     steps:
-      - name: Checkout repository
+      - name: Checkout reports branch
         uses: actions/checkout@v4
         with:
           ref: reports
+          fetch-depth: 0
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -25,14 +26,19 @@ jobs:
       - name: Install dependencies
         run: pip install requests aiohttp tenacity
 
-      - name: Generate ranking
-        run: python .github/scripts/generate_ranking.py
+      - name: Download ranking script from main branch
+        run: |
+          curl -o generate_ranking.py \
+            https://raw.githubusercontent.com/talefou/yingsu/main/.github/scripts/generate_ranking.py
 
-      - name: Commit result if changed
+      - name: Generate ranking
+        run: python generate_ranking.py
+
+      - name: Commit and push result.json if changed
         run: |
           git config user.name "GitHub Action Bot"
           git config user.email "action@github.com"
           
-          git add result.json
-          git diff --staged --quiet || git commit -m "chore: auto update source ranking [$(date '+%Y-%m-%d %H:%M')]"
-          git push origin HEAD:reports
+          git add result.json || true
+          git diff --staged --quiet || git commit -m "chore: auto update source ranking $(date '+%Y-%m-%d %H:%M')"
+          git push origin HEAD:reports || echo "No changes or push skipped"
