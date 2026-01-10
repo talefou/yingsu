@@ -1,8 +1,8 @@
 name: Generate Reports Branch
 
-on:
+于:
   push:
-    branches: [ main ]
+    分支: [ main ]
   schedule:
     - cron: '0 * * * *'  # 每小时执行一次
 
@@ -40,15 +40,15 @@ jobs:
         # 添加整个 reports 文件夹
         git add reports
         
-        # 复制 reports 中的 HTML 文件到根目录，并重命名为 index.html
-        # 假设只有一个 HTML 文件，使用通配符匹配 speed-test-report-*.html
+        # 复制 reports 中的 HTML/JSON 文件到根目录，并重命名
         cp reports/speed-test-report-*.html ./index.html
+        cp reports/speed-test-report-*.json ./db.json
         
-        # 添加 index.html 到 Git
-        git add index.html
+        # 添加到 Git
+        git add index.html db.json
         
         # 提交变更
-        git commit -m "Update reports and index.html from build $(date)"
+        git commit -m "Update reports from build $(date)"
         
         # 强制推送到 reports 分支
         git push -f origin reports
