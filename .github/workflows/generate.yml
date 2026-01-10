@@ -1,6 +1,6 @@
 name: Generate Reports Branch
 
-于:
+on:
   push:
     branches: [ main ]
   schedule:
