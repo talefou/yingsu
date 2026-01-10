@@ -1,4 +1,4 @@
-name: Update-Ranking
+name: Update Ranking
 
 on:
   schedule:
