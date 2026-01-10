@@ -8,7 +8,7 @@ from pathlib import Path
 from tenacity import retry, stop_after_attempt, wait_fixed
 
 # 修改为新的数据源地址
-CONFIG_URL = "https://txt.vayfou.cn/config.json?token=vayfou"
+CONFIG_URL = "https://raw.githubusercontent.com/talefou/static/refs/heads/main/tv/config.json"
 RESULT_FILE = Path("result.json")
 TIMEOUT = 10         # 稍微增加超时时间，有些源响应慢
 TEST_PATH = "/api.php/provide/vod"   # 轻量测试路径，可改为 "/" 或 "/?ac=videolist"
