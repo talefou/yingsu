@@ -71,7 +71,7 @@ module.exports = {
       isXml: false
     },
     {
-      name: "豆瓣采集",
+      name: "豆瓣点播",
       api: "https://caiji.dbzy5.com/api.php/provide/vod",
       isXml: false
     },
